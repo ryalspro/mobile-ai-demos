@@ -1,0 +1,34 @@
+name: Cleanup Old Demos
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Run every 6 hours
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove files older than 48 hours
+        run: |
+          # Use find to locate .html files in the root or demos/ directory
+          # Note: Adjust path if you save them elsewhere
+          find . -name "*.html" -mmin +2880 -type f -delete
+          
+          # Check if there are changes to commit
+          if [[ -n $(git status --porcelain) ]]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit -m "chore: cleanup expired demos"
+            git push
+          else
+            echo "No expired demos to cleanup."
+          fi
