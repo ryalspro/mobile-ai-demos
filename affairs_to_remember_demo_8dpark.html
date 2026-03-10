@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFFAIRS to REMEMBER - Personalized Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+    
+    .iphone-frame {
+      position: relative; margin-left: auto; margin-right: auto; border: 12px solid #1c1c1e; background: #1c1c1e;
+      border-radius: 3.5rem; height: 844px; width: 390px;
+      box-shadow: 0 50px 100px -20px rgba(0,0,0,0.45), 0 30px 60px -30px rgba(0,0,0,0.3);
+      transform: scale(0.85); transform-origin: top; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @media (min-width: 1024px) { .iphone-frame { transform: scale(0.95); margin-left: auto; margin-right: 0; } }
+    .iphone-frame:hover { transform: scale(0.87); }
+    @media (min-width: 1024px) { .iphone-frame:hover { transform: scale(0.98); } }
+    
+    /* Mobile-on-Mobile Scaling */
+    @media (max-width: 500px) {
+      .iphone-frame {
+        transform: scale(calc(100vw / 440)) translateY(-5%);
+        transform-origin: top center;
+        margin-bottom: -150px; /* Offset the scale empty space */
+      }
+      #preview-area { padding-top: 2rem; }
+      #content-sidebar { order: 2; }
+      #preview-area { order: 1; }
+      #preview-area > div:first-child { display: none; } /* Hide toggle on small phones */
+    }
+    
+    .iphone-screen { border-radius: 2.75rem; overflow: hidden; width: 100%; height: 100%; background: white; position: relative; display: flex; flex-direction: column; }
+    
+    .desktop-frame {
+      position: relative; width: 100%; max-width: 1100px;
+      margin: 0 auto; transition: all 0.5s ease;
+    }
+    
+    .desktop-screen {
+      border: 8px solid #222; background: #111; border-radius: 1.5rem;
+      width: 100%; aspect-ratio: 16/10; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden; display: flex; flex-direction: column;
+      position: relative;
+    }
+
+    .chat-container-wrapper {
+        position: absolute; inset: 0; pointer-events: none; z-index: 50;
+    }
+
+    .chat-container {
+        position: absolute; bottom: 16px; right: 16px; pointer-events: auto;
+        display: flex; flex-direction: column; align-items: flex-end;
+    }
+
+    .iphone-frame .chat-window { width: 280px !important; height: 480px !important; }
+    .desktop-frame .chat-window { width: 400px !important; height: 440px !important; }
+
+    .hidden { display: none !important; }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+    /* Premium Hero Styles */
+    @keyframes mesh {
+      0% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(40px,-60px) scale(1.2); }
+      66% { transform: translate(-30px,30px) scale(0.8); }
+      100% { transform: translate(0,0) scale(1); }
+    }
+    .mesh-blob { 
+      animation: mesh 25s infinite alternate; 
+      filter: blur(60px); 
+      opacity: 0.12; 
+      pointer-events: none;
+      will-change: transform;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.08);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #0f172a, #334155);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .pulse-dot {
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 #6a762f66; }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 136, 255, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 136, 255, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50/50 text-slate-900 border-t-8 relative overflow-x-hidden" style="border-color: #6a762f">
+  <!-- Mesh Background -->
+  <div class="absolute top-[-200px] left-[-100px] w-[800px] h-[800px] bg-blue-500 rounded-full mesh-blob -z-10"></div>
+  <div class="absolute top-0 right-[-100px] w-[700px] h-[700px] bg-indigo-400 rounded-full mesh-blob -z-10" style="animation-delay: -7s"></div>
+
+  <div class="w-full max-w-7xl mx-auto px-6 py-8 md:py-12">
+    <!-- Horizontal Hero Showcase Card -->
+    <div class="max-w-6xl mx-auto glass-card rounded-[2.5rem] p-8 md:p-12 mb-12 relative overflow-hidden flex flex-col items-center border-t-4" style="border-top-color: #0f172a">
+      <div class="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-black/[0.01] pointer-events-none"></div>
+      
+      <header class="relative z-10 w-full flex flex-col items-center">
+        <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/90 border border-slate-100 mb-6 shadow-md shadow-blue-500/5">
+          <div class="w-2 h-2 rounded-full bg-[#0088ff] pulse-dot"></div>
+          <span class="text-[10px] font-black text-slate-900 uppercase tracking-[0.3em]">Never miss a call or lead again!</span>
+        </div>
+        
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 w-full">
+          <h2 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-none text-gradient shrink-0">
+            AFFAIRS to REMEMBER
+          </h2>
+          
+          <div class="hidden md:block w-px h-12 bg-slate-200 opacity-50"></div>
+          
+          <p class="text-slate-500 text-lg md:text-xl font-medium max-w-xl leading-tight opacity-90 text-center md:text-left">
+            AI Chat features for your website
+          </p>
+        </div>
+      </header>
+    </div>
+
+    <!-- Main Layout -->
+    <main id="main-layout" class="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 mt-12 lg:mt-20">
+      
+      <!-- Left Content -->
+      <div id="content-sidebar" class="flex-1 flex flex-col space-y-6 w-full text-center lg:text-left max-w-lg transition-all duration-500">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
+          Meet Your <span class="text-[#0088ff]">AI Employee</span>
+        </h1>
+        <h3 class="text-xl md:text-2xl font-bold text-slate-800">
+          <span class="text-[#0088ff]">Chat</span> with it. <span class="text-[#0088ff]">Talk</span> to it.
+        </h3>
+        <div class="space-y-6 text-lg text-slate-600 font-medium leading-relaxed">
+          <p>Role-play real customer conversations for your business, right now.</p>
+          <p>Tap the phone to choose <span class="text-[#0088ff]">Chat</span> or <span class="text-[#0088ff]">Voice</span> and experience your AI employee in action.</p>
+        </div>
+        <div class="pt-8 opacity-80 lg:mx-0 mx-auto">
+           <p class="text-sm text-slate-400 italic leading-relaxed max-w-md mx-auto lg:mx-0">
+            This is an example personalized demo preview. When you become a customer your Live AI employees are fully trained on your business, services, FAQs, and booking system.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Preview Area -->
+      <div id="preview-area" class="flex-1 flex flex-col items-center w-full space-y-4 lg:items-end transition-all duration-500">
+        
+        <!-- Device Toggle -->
+        <div class="flex bg-slate-100 p-1 rounded-lg self-center lg:self-end">
+            <button onclick="setDevice('phone')" id="btn-phone" class="flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm bg-white text-[#0088ff] shadow-sm font-bold">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                <span>Mobile</span>
+            </button>
+            <button onclick="setDevice('desktop')" id="btn-desktop" class="flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm text-slate-500 hover:text-slate-700">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                <span>Desktop</span>
+            </button>
+        </div>
+
+        <div class="w-full flex justify-center lg:justify-end">
+          <!-- Phone View -->
+          <div id="phone-view" class="iphone-frame">
+            <div class="h-[40px] w-[4px] bg-[#2c2c2e] absolute -left-[16px] top-[100px] rounded-l-lg opacity-40"></div>
+            <div class="h-[65px] w-[4px] bg-[#2c2c2e] absolute -left-[16px] top-[170px] rounded-l-lg opacity-40"></div>
+            <div class="h-[65px] w-[4px] bg-[#2c2c2e] absolute -left-[16px] top-[245px] rounded-l-lg opacity-40"></div>
+            <div class="h-[95px] w-[4px] bg-[#2c2c2e] absolute -right-[16px] top-[190px] rounded-r-lg opacity-40"></div>
+            
+            <div class="iphone-screen">
+              <!-- Dynamic Island -->
+              <div class="absolute top-0 left-0 right-0 h-10 glass z-30 flex items-center justify-center">
+                  <div class="w-[120px] h-8 bg-black rounded-full flex items-center justify-between px-4 mt-2">
+                      <div class="w-1.5 h-1.5 rounded-full bg-[#1a1a2e] shadow-[inset_0_0_2px_rgba(255,255,255,0.3)]"></div>
+                      <div class="flex gap-1.5">
+                          <div class="w-1 h-1 rounded-full bg-green-500/40"></div>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="flex-1 w-full relative bg-white pt-16 overflow-y-auto overflow-x-hidden" id="phone-content-host">
+                <div id="extracted-content-mobile" class="w-full"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:og="http://ogp.me/ns#">
+<head><base href="https://affairs.com/"/>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="" name="description"/>
+<title>Affairs to Remember</title>
+<link data-rocket-prefetch="" href="https://fonts.googleapis.com" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://www.gstatic.com" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://connect.facebook.net" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://stats.wp.com" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://www.google.com" rel="dns-prefetch"/>
+<link as="style" data-rocket-preload="" href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" rel="preload"/>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" media="print" onload="this.media='all'" rel="stylesheet"/>
+<noscript data-wpr-hosted-gf-parameters=""><link href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" rel="stylesheet"/></noscript><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-1920x1080.jpg" media="(max-width:1920px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-1600x900.jpg" media="(max-width:1600px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-1280x720.jpg" media="(max-width:1280px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-960x540.jpg" media="(max-width:960px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-720x400.jpg" media="(max-width:720px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-640x360.jpg" media="(max-width:640px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-480x270.jpg" media="(max-width:480px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-360x200.jpg" media="(max-width:360px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-240x140.jpg" media="(max-width:240px)" rel="preload"/>
+<link href="https://affairs.com/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<!-- OPEN GRAPH TAGS (FACEBOOK) -->
+<meta content="/" property="og:url"/>
+<meta content="website" property="og:type"/>
+<meta content="Home | Affairs to Remember" property="og:title"/>
+<meta content="" property="og:description"/>
+<meta content="" property="og:image"/>
+<!-- TWITTER CARD -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="@AffairsCaterers" name="twitter:site"/>
+<meta content="@AffairsCaterers" name="twitter:creator"/>
+<meta content="Home" name="twitter:title"/>
+<meta content="" name="twitter:description"/>
+<meta content="" name="twitter:image"/>
+<!-- SCHEMA.ORG HEADERS (FOR GOOGLE) -->
+<script type="application/ld+json">
+{
+ "@context" : "https://schema.org",
+  "@type" : "Corporation",
+  "name" : "Affairs to Remember",
+  "url" : "https://affairs.com",
+  "logo" : "https://affairs.com/wp-content/themes/AffairsToRemember/graphics/logo.svg",
+  "address" : {
+    "@type" : "PostalAddress",
+    "addressLocality" : "Atlanta",
+    "addressRegion" : "Georgia",
+    "postalCode" : "30318-2206",
+    "streetAddress" : "2316 DeFoor Hills Road NW"
+  },
+  "email" : "mailto:events@affairs.com",
+  "telephone" : "(404) 872-7859",
+  "sameAs" : [ "" ]
+}
+</script>
+<meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name="robots"/>
+<!-- Google Tag Manager for WordPress by gtm4wp.com -->
+<script data-cfasync="false" data-pagespeed-no-defer="">
+	var gtm4wp_datalayer_name = "dataLayer";
+	var dataLayer = dataLayer || [];
+</script>
+<!-- End Google Tag Manager for WordPress by gtm4wp.com -->
+<!-- This site is optimized with the Yoast SEO plugin v27.1.1 - https://yoast.com/product/yoast-seo-wordpress/ -->
+<meta content="Comprehensive turnkey luxury catering and full-service event production with innovative menus, seamless planning, and impeccable service." name="description"/>
+<link href="https://affairs.com/" rel="canonical"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Affairs to Remember | Atlanta’s Catering &amp; Event Authority" property="og:title"/>
+<meta content="Comprehensive turnkey luxury catering and full-service event production with innovative menus, seamless planning, and impeccable service." property="og:description"/>
+<meta content="https://affairs.com/" property="og:url"/>
+<meta content="Affairs to Remember" property="og:site_name"/>
+<meta content="2026-01-27T17:07:06+00:00" property="article:modified_time"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<script class="yoast-schema-graph" type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://affairs.com/","url":"https://affairs.com/","name":"Affairs to Remember | Atlanta’s Catering & Event Authority","isPartOf":{"@id":"https://affairs.com/#website"},"datePublished":"2020-12-20T15:11:57+00:00","dateModified":"2026-01-27T17:07:06+00:00","description":"Comprehensive turnkey luxury catering and full-service event production with innovative menus, seamless planning, and impeccable service.","breadcrumb":{"@id":"https://affairs.com/#breadcrumb"},"inLanguage":"en","potentialAction":[{"@type":"ReadAction","target":["https://affairs.com/"]}]},{"@type":"BreadcrumbList","@id":"https://affairs.com/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home"}]},{"@type":"WebSite","@id":"https://affairs.com/#website","url":"https://affairs.com/","name":"Affairs to Remember","description":"","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://affairs.com/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en"}]}</script>
+<meta content="_6jJjif2yatDN8anYB8bCp_eGSK1EyhcC-Q1KTpkHsA" name="google-site-verification"/>
+<!-- / Yoast SEO plugin. -->
+<script id="pys-version-script" type="application/javascript">console.log('PixelYourSite Free version 11.2.0.3');</script>
+<link href="https://stats.wp.com" rel="dns-prefetch"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://affairs.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Faffairs.com%2F" rel="alternate" title="oEmbed (JSON)" type="application/json+oembed"/>
+<link href="https://affairs.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Faffairs.com%2F&amp;format=xml" rel="alternate" title="oEmbed (XML)" type="text/xml+oembed"/>
+<style id="wp-img-auto-sizes-contain-inline-css" type="text/css">
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<style id="wp-emoji-styles-inline-css" type="text/css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id="wp-block-library-inline-css" type="text/css">
+:root{--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color);--wp-editor-canvas-background:#ddd;--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,160.5;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}.has-text-align-center{text-align:center}.has-text-align-left{text-align:left}.has-text-align-right{text-align:right}.has-fit-text{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal!important}.screen-reader-text:focus{background-color:#ddd;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style*=border-top-color]){border-top-style:solid}html :where([style*=border-right-color]){border-right-style:solid}html :where([style*=border-bottom-color]){border-bottom-style:solid}html :where([style*=border-left-color]){border-left-style:solid}html :where([style*=border-width]){border-style:solid}html :where([style*=border-top-width]){border-top-style:solid}html :where([style*=border-right-width]){border-right-style:solid}html :where([style*=border-bottom-width]){border-bottom-style:solid}html :where([style*=border-left-width]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+
+/*# sourceURL=wp-block-library-inline-css */
+</style>
+<style id="classic-theme-styles-inline-css" type="text/css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+<style id="global-styles-inline-css" type="text/css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+<link href="https://affairs.com/wp-content/cache/background-css/1/affairs.com/wp-content/themes/AffairsToRemember/style.css?ver=9&amp;wpr_t=1773085171" id="page-styles-css" media="all" rel="stylesheet" type="text/css"/>
+<style id="rocket-lazyload-inline-css" type="text/css">
+.rll-youtube-player{position:relative;padding-bottom:56.23%;height:0;overflow:hidden;max-width:100%;}.rll-youtube-player:focus-within{outline: 2px solid currentColor;outline-offset: 5px;}.rll-youtube-player iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;background:0 0}.rll-youtube-player img{bottom:0;display:block;left:0;margin:auto;max-width:100%;width:100%;position:absolute;right:0;top:0;border:none;height:auto;-webkit-transition:.4s all;-moz-transition:.4s all;transition:.4s all}.rll-youtube-player img:hover{-webkit-filter:brightness(75%)}.rll-youtube-player .play{height:100%;width:100%;left:0;top:0;position:absolute;background:var(--wpr-bg-7f3a7451-c305-4115-ad29-9debf099b2f8) no-repeat center;background-color: transparent !important;cursor:pointer;border:none;}
+/*# sourceURL=rocket-lazyload-inline-css */
+</style>
+<script async="" id="burst-timeme-js" src="https://affairs.com/wp-content/plugins/burst-statistics/assets/js/timeme/timeme.min.js?ver=1773081874" type="text/javascript"></script>
+<script id="wp-hooks-js" src="https://affairs.com/wp-includes/js/dist/hooks.min.js?ver=dd5603f07f9220ed27f1" type="text/javascript"></script>
+<script id="wp-i18n-js" src="https://affairs.com/wp-includes/js/dist/i18n.min.js?ver=c26c3dc7bed366793375" type="text/javascript"></script>
+<script id="wp-i18n-js-after" type="text/javascript">
+/* <![CDATA[ */
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+/* ]]> */
+</script>
+<script id="wp-url-js" src="https://affairs.com/wp-includes/js/dist/url.min.js?ver=9e178c9516d1222dc834" type="text/javascript"></script>
+<script id="wp-api-fetch-js" src="https://affairs.com/wp-includes/js/dist/api-fetch.min.js?ver=3a4d9af2b423048b0dee" type="text/javascript"></script>
+<script id="wp-api-fetch-js-after" type="text/javascript">
+/* <![CDATA[ */
+wp.apiFetch.use( wp.apiFetch.createRootURLMiddleware( "https://affairs.com/wp-json/" ) );
+wp.apiFetch.nonceMiddleware = wp.apiFetch.createNonceMiddleware( "4919b4aebd" );
+wp.apiFetch.use( wp.apiFetch.nonceMiddleware );
+wp.apiFetch.use( wp.apiFetch.mediaUploadMiddleware );
+wp.apiFetch.nonceEndpoint = "https://affairs.com/wp-admin/admin-ajax.php?action=rest-nonce";
+//# sourceURL=wp-api-fetch-js-after
+/* ]]> */
+</script>
+<script async="" id="burst-js" src="https://affairs.com/wp-content/uploads/burst/js/burst.min.js?ver=1773085099" type="text/javascript"></script>
+<script id="jquery-core-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var pysFacebookRest = {"restApiUrl":"https://affairs.com/wp-json/pys-facebook/v1/event","debug":""};
+//# sourceURL=jquery-core-js-extra
+/* ]]> */
+</script>
+<script id="jquery-core-js" src="https://affairs.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" type="text/javascript"></script>
+<script id="jquery-migrate-js" src="https://affairs.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" type="text/javascript"></script>
+<script id="jquery-ui-js" src="https://affairs.com/wp-content/themes/AffairsToRemember/js/jquery-ui.js?ver=6.9.1" type="text/javascript"></script>
+<script id="hammer-js" src="https://affairs.com/wp-content/themes/AffairsToRemember/js/hammer.min.js?ver=6.9.1" type="text/javascript"></script>
+<script id="jquery-bind-first-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/jquery.bind-first-0.2.3.min.js?ver=0.2.3" type="text/javascript"></script>
+<script id="js-cookie-pys-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/js.cookie-2.1.3.min.js?ver=2.1.3" type="text/javascript"></script>
+<script id="js-tld-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/tld.min.js?ver=2.3.1" type="text/javascript"></script>
+<script id="pys-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var pysOptions = {"staticEvents":{"facebook":{"init_event":[{"delay":0,"type":"static","ajaxFire":false,"name":"PageView","pixelIds":["808153248656066"],"eventID":"0ea8eafb-d957-42d8-9198-435a3262e562","params":{"page_title":"Home","post_type":"page","post_id":1024,"plugin":"PixelYourSite","user_role":"guest","event_url":"affairs.com/"},"e_id":"init_event","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""}]}},"dynamicEvents":[],"triggerEvents":[],"triggerEventTypes":[],"facebook":{"pixelIds":["808153248656066"],"advancedMatching":[],"advancedMatchingEnabled":true,"removeMetadata":true,"wooVariableAsSimple":false,"serverApiEnabled":true,"wooCRSendFromServer":false,"send_external_id":null,"enabled_medical":false,"do_not_track_medical_param":["event_url","post_title","page_title","landing_page","content_name","categories","category_name","tags"],"meta_ldu":false},"debug":"","siteUrl":"https://affairs.com","ajaxUrl":"https://affairs.com/wp-admin/admin-ajax.php","ajax_event":"b6856a734d","enable_remove_download_url_param":"1","cookie_duration":"7","last_visit_duration":"60","enable_success_send_form":"","ajaxForServerEvent":"1","ajaxForServerStaticEvent":"1","useSendBeacon":"1","send_external_id":"1","external_id_expire":"180","track_cookie_for_subdomains":"1","google_consent_mode":"1","gdpr":{"ajax_enabled":false,"all_disabled_by_api":false,"facebook_disabled_by_api":false,"analytics_disabled_by_api":false,"google_ads_disabled_by_api":false,"pinterest_disabled_by_api":false,"bing_disabled_by_api":false,"reddit_disabled_by_api":false,"externalID_disabled_by_api":false,"facebook_prior_consent_enabled":true,"analytics_prior_consent_enabled":true,"google_ads_prior_consent_enabled":null,"pinterest_prior_consent_enabled":true,"bing_prior_consent_enabled":true,"cookiebot_integration_enabled":false,"cookiebot_facebook_consent_category":"marketing","cookiebot_analytics_consent_category":"statistics","cookiebot_tiktok_consent_category":"marketing","cookiebot_google_ads_consent_category":"marketing","cookiebot_pinterest_consent_category":"marketing","cookiebot_bing_consent_category":"marketing","consent_magic_integration_enabled":false,"real_cookie_banner_integration_enabled":false,"cookie_notice_integration_enabled":false,"cookie_law_info_integration_enabled":false,"analytics_storage":{"enabled":true,"value":"granted","filter":false},"ad_storage":{"enabled":true,"value":"granted","filter":false},"ad_user_data":{"enabled":true,"value":"granted","filter":false},"ad_personalization":{"enabled":true,"value":"granted","filter":false}},"cookie":{"disabled_all_cookie":false,"disabled_start_session_cookie":false,"disabled_advanced_form_data_cookie":false,"disabled_landing_page_cookie":false,"disabled_first_visit_cookie":false,"disabled_trafficsource_cookie":false,"disabled_utmTerms_cookie":false,"disabled_utmId_cookie":false},"tracking_analytics":{"TrafficSource":"direct","TrafficLanding":"http://undefined","TrafficUtms":[],"TrafficUtmsId":[]},"GATags":{"ga_datalayer_type":"default","ga_datalayer_name":"dataLayerPYS"},"woo":{"enabled":false},"edd":{"enabled":false},"cache_bypass":"1773085170"};
+//# sourceURL=pys-js-extra
+/* ]]> */
+</script>
+<script id="pys-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/public.js?ver=11.2.0.3" type="text/javascript"></script>
+<link href="https://affairs.com/wp-json/" rel="https://api.w.org/"/><link href="https://affairs.com/wp-json/wp/v2/pages/1024" rel="alternate" title="JSON" type="application/json"/><link href="https://affairs.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<meta content="WordPress 6.9.1" name="generator"/>
+<link href="https://affairs.com/" rel="shortlink"/>
+<style>img#wpstats{display:none}</style>
+<!-- Google Tag Manager for WordPress by gtm4wp.com -->
+<!-- GTM Container placement set to automatic -->
+<script data-cfasync="false" data-pagespeed-no-defer="" type="text/javascript">
+	var dataLayer_content = {"pagePostType":"frontpage","pagePostType2":"single-page","pagePostAuthor":"admin"};
+	dataLayer.push( dataLayer_content );
+</script>
+<script data-cfasync="false" data-pagespeed-no-defer="" type="text/javascript">
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TMHFJ9R7');
+</script>
+<!-- End Google Tag Manager for WordPress by gtm4wp.com --> <style id="wp-custom-css" type="text/css">
+			header nav ul > li {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+		</style>
+<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript><style id="wpr-lazyload-bg-container"></style><style id="wpr-lazyload-bg-exclusion"></style>
+<noscript>
+<style id="wpr-lazyload-bg-nostyle">#please-wait .hourglass{--wpr-bg-115d4021-7eb3-4c0d-a05f-749a7f5bd129: url('https://affairs.com/wp-content/themes/AffairsToRemember/graphics/hourglass.png');}.rll-youtube-player .play{--wpr-bg-7f3a7451-c305-4115-ad29-9debf099b2f8: url('https://affairs.com/wp-content/plugins/wp-rocket/assets/img/youtube.png');}</style>
+</noscript>
+<script type="application/javascript">const rocket_pairs = [{"selector":"#please-wait .hourglass","style":"#please-wait .hourglass{--wpr-bg-115d4021-7eb3-4c0d-a05f-749a7f5bd129: url('https:\/\/affairs.com\/wp-content\/themes\/AffairsToRemember\/graphics\/hourglass.png');}","hash":"115d4021-7eb3-4c0d-a05f-749a7f5bd129","url":"https:\/\/affairs.com\/wp-content\/themes\/AffairsToRemember\/graphics\/hourglass.png"},{"selector":".rll-youtube-player .play","style":".rll-youtube-player .play{--wpr-bg-7f3a7451-c305-4115-ad29-9debf099b2f8: url('https:\/\/affairs.com\/wp-content\/plugins\/wp-rocket\/assets\/img\/youtube.png');}","hash":"7f3a7451-c305-4115-ad29-9debf099b2f8","url":"https:\/\/affairs.com\/wp-content\/plugins\/wp-rocket\/assets\/img\/youtube.png"}]; const rocket_excluded_pairs = [];</script><meta content="WP Rocket 3.20.5" data-wpr-features="wpr_lazyload_css_bg_img wpr_lazyload_images wpr_lazyload_iframes wpr_preconnect_external_domains wpr_oci wpr_image_dimensions wpr_preload_links wpr_desktop" name="generator"/></head>
+<body data-burst_id="1024" data-burst_type="page" data-rsssl="1">
+<div id="fb-root"></div><script async="" crossorigin="anonymous" defer="" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v3.0"></script>
+<header class="with-slideshow">
+<div id="header-logo">
+<div id="nav-icon">
+<div class="three-lines"></div>
+<div class="x-mark"></div>
+<div class="bar" id="upper-bar"><div class="bar-inner"></div></div>
+<div class="bar" id="middle-bar"><div class="bar-inner"></div></div>
+<div class="bar" id="lower-bar"><div class="bar-inner"></div></div>
+</div>
+<a href="https://affairs.com"><img height="90" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/logo.svg" width="300"/></a>
+<div id="nav-icon"></div>
+</div>
+<nav class="with-slideshow" id="main-nav">
+<ul class="" id="main-navigation"><li aria-label="Main" class="main-nav-item" id="1379" role="navigation"><a class="main-nav-link" href="https://affairs.com/about/"><div class="main-nav-block">About</div></a><div class="sub-nav" id="sub-nav-1379"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/our-story/">Our Story</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/team/meet-the-makers/">Meet The Makers</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/legacy-green/">Sustainability Program</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/safety-guidelines/">Safety Guidelines</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/sustainability/">Sustainability</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/lifestyle/">Leadership &amp; Community</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/legacy-giving/">Giving Program</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1359" role="navigation"><a class="main-nav-link" href="https://affairs.com/catering/"><div class="main-nav-block">Catering</div></a><div class="sub-nav" id="sub-nav-1359"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/menus/menus/">Menus</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1154" role="navigation"><a class="main-nav-link" href="https://affairs.com/full-event-production/"><div class="main-nav-block">Full Service Event Planning</div></a><div class="sub-nav" id="sub-nav-1154"><ul class="sub-nav-list"></ul></div></li><li aria-label="Main" class="main-nav-item" id="1140" role="navigation"><a class="main-nav-link" href="https://affairs.com/venues/venues/"><div class="main-nav-block">Venues</div></a><div class="sub-nav" id="sub-nav-1140"><ul class="sub-nav-list"></ul></div></li><li aria-label="Main" class="main-nav-item" id="1179" role="navigation"><a class="main-nav-link" href="https://affairs.com/galleries/"><div class="main-nav-block">Galleries</div></a><div class="sub-nav" id="sub-nav-1179"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/gallery/social/">Social</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/gallery/food/">Food</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/gallery/corporate/">Corporate</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1359" role="navigation"><a class="main-nav-link" href="https://affairs.com/catering/"><div class="main-nav-block">ADDITIONAL SERVICES</div></a><div class="sub-nav" id="sub-nav-1359"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/bar-services/">Bar Management</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/venue-management/">Venue Management</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1148" role="navigation"><a class="main-nav-link" href="https://affairs.com/contact/contact-us/"><div class="main-nav-block">Contact Us</div></a><div class="sub-nav" id="sub-nav-1148"><ul class="sub-nav-list"></ul></div></li></ul> </nav>
+<div class="delay-animation fade-animation" id="slideshow">
+<div class="fade-item slide" id="slideshow-0">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-240x140.jpg">
+<img alt="" class="slideshow-image" fetchpriority="high" src="https://affairs.com/wp-content/uploads/2020/12/129A1715-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-1">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-2">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-1200x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-3">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-4">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+</div>
+</header>
+<div id="content">
+<section class="section copy third" id="section-0" style="background-color: #f8f4ef !important;">
+<div class="section-box">
+<div class="copy-block color-change">
+<p>AFFAIRS to REMEMBER is Atlanta’s most sustainable and luxurious catering and event producer with over 40 years of industry experience. Our success is attributable to our innovative menus, impeccable service, inspiring reliability, and immaculate attention to detail.</p>
+</div>
+<div class="quick-links">
+<ul>
+<li>
+<a href="https://affairs.com/our-story/"><h3>About Us</h3></a>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section class="section arrow-box testimonials full" id="section-2" style="background-color: #6c7830 !important;">
+<div class="arrows active-arrows animated">
+<div class="left-arrow arrow color-change"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" height="18" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2049%2018'%3E%3C/svg%3E" width="49"/><noscript><img height="18" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" width="49"/></noscript></div>
+<div class="arrows-mask"> <ul class="testimonial-list">
+<li class="testimonial" id="section-2-0">
+<div class="testimonial-copy color-change">
+<span style="color: #ffffff;"><em><span style="font-family: georgia, palatino, serif; font-size: 18pt;">"<b>Everyone had a <span style="color: #ffffff;">wonderful</span> time, and things went perfectly and smoothly without a hitch. Everything we planned was executed beautifully!</b></span></em></span>
+<p class="MsoNormal"></p> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>E. Hershman</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+<li class="testimonial" id="section-2-1">
+<div class="testimonial-copy color-change">
+<em><span style="font-family: georgia, palatino, serif; font-size: 18pt;"><b>"From the meticulous planning to the seamless execution, every detail was handled with the utmost care and professionalism. The event was absolutely fantastic, and it was clear that a lot of hard work and effort went into making it such a memorable occasion."</b></span></em> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>L. Johnson</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+<li class="testimonial" id="section-2-2">
+<div class="testimonial-copy color-change">
+<span style="color: #000000; font-size: 18pt; font-family: georgia, palatino, serif;"><strong><span style="color: #ffffff;">...<em><span style="color: #ffffff;">..</span>.</em></span></strong><span style="color: #ffffff;"><em><b>"the event was a BIG success and I know you all were a part of the reason why. Thanks again for helping us curate a wonderful event, recommendations, and flexibility with last-minute requests</b></em></span></span><span style="color: #ffffff;"><em><b style="font-family: georgia, palatino, serif; font-size: 18pt;"><span style="font-size: 18pt; font-family: georgia, palatino, serif;">". th</span>e utmost care and professionalism. The event was absolutely fantastic, and it was clear that a lot of hard work and effort went into making it such a memorable occasion."</b></em></span>
+<p class="MsoNormal"></p> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>D. Deloach</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+<li class="testimonial" id="section-2-3">
+<div class="testimonial-copy color-change">
+<p class="MsoNormal"><span style="color: #ffffff;"><em><span style="font-size: 18pt; font-family: georgia, palatino, serif;"><b>"Sending you all my appreciation for making our Holiday Party one of the Best Ever.  Truly grateful for the absolutely exceptional service you provided. Your team's performance was nothing short of brilliant."</b></span></em></span></p>
+<p class="MsoNormal"></p> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>J. Godsell</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+</ul>
+</div>
+<div class="right-arrow arrow color-change"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" height="18" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2049%2018'%3E%3C/svg%3E" width="49"/><noscript><img height="18" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" width="49"/></noscript></div> </div>
+</section>
+<section class="section photo-single twothirds" id="section-4">
+<div class="section-box">
+<div class="photo-single-box" id="1031">
+<picture>
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:1440px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:1280px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:1024px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:960px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-960x800.jpg" media="(min-width:640px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:560px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-480x480.jpg" media="(min-width:480px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-360x360.jpg" media="(min-width:360px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-240x240.jpg" media="(min-width:10px)">
+<img alt="" data-lazy-src="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" title="Springer-Mountain-Chicken-Pot-Pie_095"/><noscript><img alt="" src="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" title="Springer-Mountain-Chicken-Pot-Pie_095"/></noscript>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+</div>
+</section>
+<section class="section copy third" id="section-5" style="background-color: #ececec !important;">
+<div class="section-box">
+<h2 class="color-change" id="Catering">Catering</h2>
+<div class="copy-block color-change">
+<p>We pride ourselves on our award-winning menus crafted by our inspired chefs. Delicious, sustainable, and totally customizable, we have the perfect menu for your special event.</p>
+</div>
+<div class="quick-links">
+<ul>
+<li>
+<a href="https://affairs.com/menus/menus/"><h3>Menus</h3></a>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section class="section copy half" id="section-6" style="background-color: #f8f4ef !important;">
+<div class="section-box">
+<h2 class="color-change" id="Service Portfolio">Service Portfolio</h2>
+<div class="copy-block color-change">
+<p>Our Full Event Production meets the challenge of designing, managing, and orchestrating your special event with decades of industry experience and a highly dedicated team.</p>
+</div>
+<div class="quick-links">
+<ul>
+<li>
+<a href="https://affairs.com/full-event-production/"><h3>Full Event Production</h3></a>
+</li>
+<li>
+<a href="https://affairs.com/venue-management/"><h3>Venue Management</h3></a>
+</li>
+<li>
+<a href="https://affairs.com/bar-services/"><h3>Bar Management Services</h3></a>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section class="section photo-single half" id="section-8">
+<div class="section-box">
+<div class="photo-single-box" id="1032">
+<picture>
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:1440px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:1280px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:1024px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:960px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-960x960.jpg" media="(min-width:640px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:560px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-480x480.jpg" media="(min-width:480px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-360x360.jpg" media="(min-width:360px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-240x240.jpg" media="(min-width:10px)">
+<img alt="" data-lazy-src="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" title="Atlanta Small Business Masterclass"/><noscript><img alt="" src="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" title="Atlanta Small Business Masterclass"/></noscript>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+</div>
+</section>
+</div>
+</body>
+<footer>
+
+<noscript><img alt="" height="1" src="https://www.facebook.com/tr?id=808153248656066&amp;ev=PageView&amp;noscript=1&amp;cd%5Bpage_title%5D=Home&amp;cd%5Bpost_type%5D=page&amp;cd%5Bpost_id%5D=1024&amp;cd%5Bplugin%5D=PixelYourSite&amp;cd%5Buser_role%5D=guest&amp;cd%5Bevent_url%5D=affairs.com%2F" style="display: none;" width="1"/></noscript>
+<script id="rocket-browser-checker-js-after" type="text/javascript">
+/* <![CDATA[ */
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+//# sourceURL=rocket-browser-checker-js-after
+/* ]]> */
+</script>
+<script id="rocket-preload-links-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"/(?:.+/)?feed(?:/(?:.+/?)?)?$|/(?:.+/)?embed/|/(index.php/)?(.*)wp-json(/.*|$)|/refer/|/go/|/recommend/|/recommends/","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php|html|htm","siteUrl":"https://affairs.com","onHoverDelay":"100","rateThrottle":"3"};
+//# sourceURL=rocket-preload-links-js-extra
+/* ]]> */
+</script>
+<script id="rocket-preload-links-js-after" type="text/javascript">
+/* <![CDATA[ */
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+
+//# sourceURL=rocket-preload-links-js-after
+/* ]]> */
+</script>
+<script id="rocket_lazyload_css-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var rocket_lazyload_css_data = {"threshold":"300"};
+//# sourceURL=rocket_lazyload_css-js-extra
+/* ]]> */
+</script>
+<script id="rocket_lazyload_css-js-after" type="text/javascript">
+/* <![CDATA[ */
+!function o(n,c,a){function u(t,e){if(!c[t]){if(!n[t]){var r="function"==typeof require&&require;if(!e&&r)return r(t,!0);if(s)return s(t,!0);throw(e=new Error("Cannot find module '"+t+"'")).code="MODULE_NOT_FOUND",e}r=c[t]={exports:{}},n[t][0].call(r.exports,function(e){return u(n[t][1][e]||e)},r,r.exports,o,n,c,a)}return c[t].exports}for(var s="function"==typeof require&&require,e=0;e<a.length;e++)u(a[e]);return u}({1:[function(e,t,r){"use strict";{const c="undefined"==typeof rocket_pairs?[]:rocket_pairs,a=(("undefined"==typeof rocket_excluded_pairs?[]:rocket_excluded_pairs).map(t=>{var e=t.selector;document.querySelectorAll(e).forEach(e=>{e.setAttribute("data-rocket-lazy-bg-"+t.hash,"excluded")})}),document.querySelector("#wpr-lazyload-bg-container"));var o=rocket_lazyload_css_data.threshold||300;const u=new IntersectionObserver(e=>{e.forEach(t=>{t.isIntersecting&&c.filter(e=>t.target.matches(e.selector)).map(t=>{var e;t&&((e=document.createElement("style")).textContent=t.style,a.insertAdjacentElement("afterend",e),t.elements.forEach(e=>{u.unobserve(e),e.setAttribute("data-rocket-lazy-bg-"+t.hash,"loaded")}))})})},{rootMargin:o+"px"});function n(){0<(0<arguments.length&&void 0!==arguments[0]?arguments[0]:[]).length&&c.forEach(t=>{try{document.querySelectorAll(t.selector).forEach(e=>{"loaded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&"excluded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&(u.observe(e),(t.elements||=[]).push(e))})}catch(e){console.error(e)}})}n(),function(){const r=window.MutationObserver;return function(e,t){if(e&&1===e.nodeType)return(t=new r(t)).observe(e,{attributes:!0,childList:!0,subtree:!0}),t}}()(document.querySelector("body"),n)}},{}]},{},[1]);
+//# sourceURL=rocket_lazyload_css-js-after
+/* ]]> */
+</script>
+<script id="page-script-js" src="https://affairs.com/wp-content/themes/AffairsToRemember/script.js?ver=6.9.1" type="text/javascript"></script>
+<script id="jetpack-stats-js-before" type="text/javascript">
+/* <![CDATA[ */
+_stq = window._stq || [];
+_stq.push([ "view", {"v":"ext","blog":"246241674","post":"1024","tz":"0","srv":"affairs.com","j":"1:15.6"} ]);
+_stq.push([ "clickTrackerInit", "246241674", "1024" ]);
+//# sourceURL=jetpack-stats-js-before
+/* ]]> */
+</script>
+<script data-wp-strategy="defer" defer="defer" id="jetpack-stats-js" src="https://stats.wp.com/e-202611.js" type="text/javascript"></script>
+<script>window.lazyLoadOptions=[{elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}},{elements_selector:".rocket-lazyload",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,}];window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(var i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script async="" data-no-minify="1" src="https://affairs.com/wp-content/plugins/wp-rocket/assets/js/lazyload/17.8.3/lazyload.min.js"></script><script>function lazyLoadThumb(e,alt,l){var t='<img data-lazy-src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript>',a='<button class="play" aria-label="Play Youtube video"></button>';if(l){t=t.replace('data-lazy-','');t=t.replace('loading="lazy"','');t=t.replace(/<noscript>.*?<\/noscript>/g,'');}t=t.replace('alt=""','alt="'+alt+'"');return t.replace("ID",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement("iframe"),t="ID?autoplay=1";t+=0===this.parentNode.dataset.query.length?"":"&"+this.parentNode.dataset.query;e.setAttribute("src",t.replace("ID",this.parentNode.dataset.src)),e.setAttribute("frameborder","0"),e.setAttribute("allowfullscreen","1"),e.setAttribute("allow","accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"),this.parentNode.parentNode.replaceChild(e,this.parentNode)}document.addEventListener("DOMContentLoaded",function(){var exclusions=[];var e,t,p,u,l,a=document.getElementsByClassName("rll-youtube-player");for(t=0;t<a.length;t++)(e=document.createElement("div")),(u='https://i.ytimg.com/vi/ID/hqdefault.jpg'),(u=u.replace('ID',a[t].dataset.id)),(l=exclusions.some(exclusion=>u.includes(exclusion))),e.setAttribute("data-id",a[t].dataset.id),e.setAttribute("data-query",a[t].dataset.query),e.setAttribute("data-src",a[t].dataset.src),(e.innerHTML=lazyLoadThumb(a[t].dataset.id,a[t].dataset.alt,l)),a[t].appendChild(e),(p=e.querySelector(".play")),(p.onclick=lazyLoadYoutubeIframe)});</script>
+<div class="contact-form-container">
+<form action="https://affairs.com/wp-content/themes/AffairsToRemember/contact-form.php" id="contact-form" method="post">
+<h3>Contact Us</h3>
+<input id="originating-page" name="page" type="hidden" value="Home"/>
+<label for="name-first">First Name *
+				<input class="contact-reset" id="name-first" name="name_first" type="text" value=""/>
+<div class="contact-warning" id="name-first-warning">Please tell us your first name.</div>
+</label>
+<label for="name-last">Last Name *
+				<input class="contact-reset" id="name-last" name="name_last" type="text" value=""/>
+<div class="contact-warning" id="name-last-warning">Please tell us your last name.</div>
+</label>
+<label for="organization-company">Organization/Company
+				<input class="contact-reset" id="organization-company" name="organization_company" type="text" value=""/>
+</label>
+<label for="email">Email *
+				<input class="contact-reset" id="email" name="email" type="email" value=""/>
+<div class="contact-warning" id="email-warning">Please give us an email address where we can reach you.</div>
+</label>
+<label for="phone">Phone Number *
+				<input class="contact-reset" id="phone" name="phone" type="tel" value=""/>
+<div class="contact-warning" id="phone-warning">Please give us a phone number where we can reach you.</div>
+</label>
+<label for="contact-time">Best Time to Contact
+				<select id="contact-time" name="contact_time">
+<option value="Anytime">Anytime</option>
+<option value="Morning">Morning</option>
+<option value="Afternoon">Afternoon</option>
+</select>
+</label>
+<label for="event-date">Event Date
+				<input id="event-date" name="event_date" type="date" value=""/>
+</label>
+<label for="be-of-service">How Can We Be of Service? *
+				<textarea class="contact-reset" id="be-of-service" name="be_of_service" value=""></textarea>
+<div class="contact-warning" id="be-of-service-warning">How can we be of service?</div>
+</label>
+<div class="google">
+<script>
+var $ = jQuery.noConflict(); 
+var googleRecaptcha;
+var onloadCallback = function() {
+	googleRecaptcha = grecaptcha.render( document.getElementById( 'google-recaptcha' ), {
+		'sitekey' : '6LdJxyQaAAAAAMzBJOe74_PEBRFEPutRTHSQ2ENk'
+	});
+};
+$(document).ready(function(){
+	var hourglassDegree = 0, hourglassTimer;
+	function hourglassRotate() {
+		$('.hourglass').css({ transform: 'rotate(' + hourglassDegree + 'deg)'});  
+		$('.hourglass').css({ '-moz-transform': 'rotate(' + hourglassDegree + 'deg)'});                      
+		hourglassTimer = setTimeout(function() {
+			++hourglassDegree; hourglassRotate();
+		},1);
+	}
+	function openPleaseWait(){ 
+		$('#please-wait').css( 'display', 'flex' );
+		hourglassRotate();
+	}
+	$(window).unload( function(){
+		$('#please-wait').hide();
+	}); 
+	$('#please-wait').hide();
+	$('#contact-form').on( 'click', '#contact-send', function(event){
+		event.preventDefault();
+		$('.contact-warning').hide( 0 );
+		$('.contact-reset').css( 'border', 'none' );
+		if( $('#name-first').val() ){
+			if( $('#name-last').val() ){
+				if( $('#email').val() ){
+					if( $('#phone').val() ){
+						if( $('#be-of-service').val() ){
+							var captchaResponse = grecaptcha.getResponse( googleRecaptcha );
+							if( captchaResponse ){
+								openPleaseWait();
+								document.getElementById("contact-form").submit();
+								return true;
+							}else{
+								$('#google-recaptcha').css('border', '1px solid red');
+								$('#captcha-warning').css( 'display', 'block' );
+							}						
+						}else{
+							$('#be-of-service').css('border', '1px solid red');
+							$('#be-of-service-warning').show( 0 );
+						}
+					}else{
+						$('#phone').css('border', '1px solid red');
+						$('#phone-warning').show( 0 );
+					}
+				}else{
+					$('#email').css('border', '1px solid red');
+					$('#email-warning').show( 0 );
+				}
+			}else{
+				$('#name-last').css('border', '1px solid red');
+				$('#name-last-warning').show( 0 );
+			}
+		}else{ 
+			$('#name-first').css('border', '1px solid red');
+			$('#name-first-warning').show( 0 );
+		}
+	});
+});
+				</script>
+<div class="g-recaptcha contact-reset" id="google-recaptcha"></div>
+<div class="contact-warning" id="captcha-warning">Please verify by checking the box above.</div>
+</div>
+<button id="contact-send"><h2>SEND</h2></button>
+<div id="please-wait"><div class="message"></div><div class="hourglass"></div></div>
+</form>
+<script async="" defer="" src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&amp;render=explicit"></script>
+</div>
+<div id="footer-address">
+<img height="90" id="footer-logo" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/logo.svg" width="300"/>
+<p>2316 DeFoor Hills Road NW</p>
+<p>Atlanta, Georgia 30318-2206</p>
+<p><a href="tel:(404) 872-7859">(404) 872-7859</a></p>
+<p><a href="mailto:events@affairs.com">events@affairs.com</a></p>
+</div>
+<div id="footer-nav">
+<ul class="" id="footer-nav-list"><li class="footer-nav-item selected" id="1024" role="navigation"><a class="footer-nav-link" href="https://affairs.com/">Home</a></li><li class="footer-nav-item" id="1379" role="navigation"><a class="footer-nav-link" href="https://affairs.com/about/">About</a></li><li class="footer-nav-item" id="1359" role="navigation"><a class="footer-nav-link" href="https://affairs.com/catering/">Catering</a></li><li class="footer-nav-item" id="1150" role="navigation"><a class="footer-nav-link" href="https://affairs.com/service-portfolio/">Service Portfolio</a></li><li class="footer-nav-item" id="1179" role="navigation"><a class="footer-nav-link" href="https://affairs.com/galleries/">Galleries</a></li><li class="footer-nav-item" id="1367" role="navigation"><a class="footer-nav-link" href="https://affairs.com/sustainability/">Sustainability</a></li><li class="footer-nav-item" id="1148" role="navigation"><a class="footer-nav-link" href="https://affairs.com/contact/contact-us/">Contact Us</a></li><li class="footer-nav-item" id="2063" role="navigation"><a class="footer-nav-link" href="https://affairs.com/careers/career-opportunities/">Career Opportunities</a></li><li class="footer-nav-item" id="1965" role="navigation"><a class="footer-nav-link" href="https://affairs.com/privacy-policy/">Privacy Policy</a></li></ul> </div>
+<div id="footer-social">
+<p>FOLLOW US ON:</p>
+<ul id="social-icons">
+<li class="social-media-icon">
+<a href="https://www.facebook.com/affairs.to.remember.atl/?epa=SEARCH_BOX"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/facebook.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/facebook.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.instagram.com/_affairs_to_remember_/ "><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/instagram.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/instagram.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.yelp.com/biz/affairs-to-remember-atlanta "><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/yelp.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/yelp.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.linkedin.com/company/affairs-to-remember-caterers/?viewAsMember=true"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/linkedin.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/linkedin.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://twitter.com/AffairsCaterers"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/twitter.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/twitter.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.youtube.com/channel/UC6CUNviYotwzl7-H7bjnufQ"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/youtube.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/youtube.svg" width="45"/></noscript></a>
+</li>
+</ul>
+</div>
+</footer>
+<div id="copyright">
+<p>Copyright © 2026 Affairs to Remember.</p>
+<p>Website created by <a href="http://hemispheresunlimited.com">Hemispheres Unlimited</a>.</p>
+</div>
+</html>
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1773085171 --></div>
+              </div>
+              
+              <!-- Home Indicator -->
+              <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/10 rounded-full z-30"></div>
+              <div id="chat-container-phone" class="chat-container-wrapper"></div>
+            </div>
+          </div>
+
+          <!-- Desktop View -->
+          <div id="desktop-view" class="desktop-frame hidden">
+            <div class="desktop-screen">
+              <div class="h-10 bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-4 shrink-0">
+                  <div class="flex gap-1.5">
+                      <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+                      <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                      <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                  </div>
+                  <div class="flex-1 max-w-sm bg-white border border-slate-200 rounded-md h-6 px-4 flex items-center">
+                      <span class="text-[10px] text-slate-400 truncate tracking-wide">https://affairs.com/</span>
+                  </div>
+              </div>
+              <div class="flex-1 relative bg-white overflow-auto" id="desktop-content-host">
+                  <div id="extracted-content-desktop" class="w-full"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:og="http://ogp.me/ns#">
+<head><base href="https://affairs.com/"/>
+<meta charset="utf-8"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="" name="description"/>
+<title>Affairs to Remember</title>
+<link data-rocket-prefetch="" href="https://fonts.googleapis.com" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://www.gstatic.com" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://connect.facebook.net" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://stats.wp.com" rel="dns-prefetch"/>
+<link data-rocket-prefetch="" href="https://www.google.com" rel="dns-prefetch"/>
+<link as="style" data-rocket-preload="" href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" rel="preload"/>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" media="print" onload="this.media='all'" rel="stylesheet"/>
+<noscript data-wpr-hosted-gf-parameters=""><link href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" rel="stylesheet"/></noscript><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-1920x1080.jpg" media="(max-width:1920px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-1600x900.jpg" media="(max-width:1600px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-1280x720.jpg" media="(max-width:1280px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-960x540.jpg" media="(max-width:960px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-720x400.jpg" media="(max-width:720px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-640x360.jpg" media="(max-width:640px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-480x270.jpg" media="(max-width:480px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-360x200.jpg" media="(max-width:360px)" rel="preload"/><link as="image" data-rocket-preload="" fetchpriority="high" href="https://affairs.com/wp-content/uploads/2020/12/129A1715-240x140.jpg" media="(max-width:240px)" rel="preload"/>
+<link href="https://affairs.com/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+<!-- OPEN GRAPH TAGS (FACEBOOK) -->
+<meta content="/" property="og:url"/>
+<meta content="website" property="og:type"/>
+<meta content="Home | Affairs to Remember" property="og:title"/>
+<meta content="" property="og:description"/>
+<meta content="" property="og:image"/>
+<!-- TWITTER CARD -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="@AffairsCaterers" name="twitter:site"/>
+<meta content="@AffairsCaterers" name="twitter:creator"/>
+<meta content="Home" name="twitter:title"/>
+<meta content="" name="twitter:description"/>
+<meta content="" name="twitter:image"/>
+<!-- SCHEMA.ORG HEADERS (FOR GOOGLE) -->
+<script type="application/ld+json">
+{
+ "@context" : "https://schema.org",
+  "@type" : "Corporation",
+  "name" : "Affairs to Remember",
+  "url" : "https://affairs.com",
+  "logo" : "https://affairs.com/wp-content/themes/AffairsToRemember/graphics/logo.svg",
+  "address" : {
+    "@type" : "PostalAddress",
+    "addressLocality" : "Atlanta",
+    "addressRegion" : "Georgia",
+    "postalCode" : "30318-2206",
+    "streetAddress" : "2316 DeFoor Hills Road NW"
+  },
+  "email" : "mailto:events@affairs.com",
+  "telephone" : "(404) 872-7859",
+  "sameAs" : [ "" ]
+}
+</script>
+<meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name="robots"/>
+<!-- Google Tag Manager for WordPress by gtm4wp.com -->
+<script data-cfasync="false" data-pagespeed-no-defer="">
+	var gtm4wp_datalayer_name = "dataLayer";
+	var dataLayer = dataLayer || [];
+</script>
+<!-- End Google Tag Manager for WordPress by gtm4wp.com -->
+<!-- This site is optimized with the Yoast SEO plugin v27.1.1 - https://yoast.com/product/yoast-seo-wordpress/ -->
+<meta content="Comprehensive turnkey luxury catering and full-service event production with innovative menus, seamless planning, and impeccable service." name="description"/>
+<link href="https://affairs.com/" rel="canonical"/>
+<meta content="en_US" property="og:locale"/>
+<meta content="website" property="og:type"/>
+<meta content="Affairs to Remember | Atlanta’s Catering &amp; Event Authority" property="og:title"/>
+<meta content="Comprehensive turnkey luxury catering and full-service event production with innovative menus, seamless planning, and impeccable service." property="og:description"/>
+<meta content="https://affairs.com/" property="og:url"/>
+<meta content="Affairs to Remember" property="og:site_name"/>
+<meta content="2026-01-27T17:07:06+00:00" property="article:modified_time"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<script class="yoast-schema-graph" type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://affairs.com/","url":"https://affairs.com/","name":"Affairs to Remember | Atlanta’s Catering & Event Authority","isPartOf":{"@id":"https://affairs.com/#website"},"datePublished":"2020-12-20T15:11:57+00:00","dateModified":"2026-01-27T17:07:06+00:00","description":"Comprehensive turnkey luxury catering and full-service event production with innovative menus, seamless planning, and impeccable service.","breadcrumb":{"@id":"https://affairs.com/#breadcrumb"},"inLanguage":"en","potentialAction":[{"@type":"ReadAction","target":["https://affairs.com/"]}]},{"@type":"BreadcrumbList","@id":"https://affairs.com/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home"}]},{"@type":"WebSite","@id":"https://affairs.com/#website","url":"https://affairs.com/","name":"Affairs to Remember","description":"","potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://affairs.com/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"en"}]}</script>
+<meta content="_6jJjif2yatDN8anYB8bCp_eGSK1EyhcC-Q1KTpkHsA" name="google-site-verification"/>
+<!-- / Yoast SEO plugin. -->
+<script id="pys-version-script" type="application/javascript">console.log('PixelYourSite Free version 11.2.0.3');</script>
+<link href="https://stats.wp.com" rel="dns-prefetch"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://affairs.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Faffairs.com%2F" rel="alternate" title="oEmbed (JSON)" type="application/json+oembed"/>
+<link href="https://affairs.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Faffairs.com%2F&amp;format=xml" rel="alternate" title="oEmbed (XML)" type="text/xml+oembed"/>
+<style id="wp-img-auto-sizes-contain-inline-css" type="text/css">
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<style id="wp-emoji-styles-inline-css" type="text/css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id="wp-block-library-inline-css" type="text/css">
+:root{--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color);--wp-editor-canvas-background:#ddd;--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,160.5;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}.has-text-align-center{text-align:center}.has-text-align-left{text-align:left}.has-text-align-right{text-align:right}.has-fit-text{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal!important}.screen-reader-text:focus{background-color:#ddd;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style*=border-top-color]){border-top-style:solid}html :where([style*=border-right-color]){border-right-style:solid}html :where([style*=border-bottom-color]){border-bottom-style:solid}html :where([style*=border-left-color]){border-left-style:solid}html :where([style*=border-width]){border-style:solid}html :where([style*=border-top-width]){border-top-style:solid}html :where([style*=border-right-width]){border-right-style:solid}html :where([style*=border-bottom-width]){border-bottom-style:solid}html :where([style*=border-left-width]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+
+/*# sourceURL=wp-block-library-inline-css */
+</style>
+<style id="classic-theme-styles-inline-css" type="text/css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+<style id="global-styles-inline-css" type="text/css">
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+<link href="https://affairs.com/wp-content/cache/background-css/1/affairs.com/wp-content/themes/AffairsToRemember/style.css?ver=9&amp;wpr_t=1773085171" id="page-styles-css" media="all" rel="stylesheet" type="text/css"/>
+<style id="rocket-lazyload-inline-css" type="text/css">
+.rll-youtube-player{position:relative;padding-bottom:56.23%;height:0;overflow:hidden;max-width:100%;}.rll-youtube-player:focus-within{outline: 2px solid currentColor;outline-offset: 5px;}.rll-youtube-player iframe{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;background:0 0}.rll-youtube-player img{bottom:0;display:block;left:0;margin:auto;max-width:100%;width:100%;position:absolute;right:0;top:0;border:none;height:auto;-webkit-transition:.4s all;-moz-transition:.4s all;transition:.4s all}.rll-youtube-player img:hover{-webkit-filter:brightness(75%)}.rll-youtube-player .play{height:100%;width:100%;left:0;top:0;position:absolute;background:var(--wpr-bg-7f3a7451-c305-4115-ad29-9debf099b2f8) no-repeat center;background-color: transparent !important;cursor:pointer;border:none;}
+/*# sourceURL=rocket-lazyload-inline-css */
+</style>
+<script async="" id="burst-timeme-js" src="https://affairs.com/wp-content/plugins/burst-statistics/assets/js/timeme/timeme.min.js?ver=1773081874" type="text/javascript"></script>
+<script id="wp-hooks-js" src="https://affairs.com/wp-includes/js/dist/hooks.min.js?ver=dd5603f07f9220ed27f1" type="text/javascript"></script>
+<script id="wp-i18n-js" src="https://affairs.com/wp-includes/js/dist/i18n.min.js?ver=c26c3dc7bed366793375" type="text/javascript"></script>
+<script id="wp-i18n-js-after" type="text/javascript">
+/* <![CDATA[ */
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+/* ]]> */
+</script>
+<script id="wp-url-js" src="https://affairs.com/wp-includes/js/dist/url.min.js?ver=9e178c9516d1222dc834" type="text/javascript"></script>
+<script id="wp-api-fetch-js" src="https://affairs.com/wp-includes/js/dist/api-fetch.min.js?ver=3a4d9af2b423048b0dee" type="text/javascript"></script>
+<script id="wp-api-fetch-js-after" type="text/javascript">
+/* <![CDATA[ */
+wp.apiFetch.use( wp.apiFetch.createRootURLMiddleware( "https://affairs.com/wp-json/" ) );
+wp.apiFetch.nonceMiddleware = wp.apiFetch.createNonceMiddleware( "4919b4aebd" );
+wp.apiFetch.use( wp.apiFetch.nonceMiddleware );
+wp.apiFetch.use( wp.apiFetch.mediaUploadMiddleware );
+wp.apiFetch.nonceEndpoint = "https://affairs.com/wp-admin/admin-ajax.php?action=rest-nonce";
+//# sourceURL=wp-api-fetch-js-after
+/* ]]> */
+</script>
+<script async="" id="burst-js" src="https://affairs.com/wp-content/uploads/burst/js/burst.min.js?ver=1773085099" type="text/javascript"></script>
+<script id="jquery-core-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var pysFacebookRest = {"restApiUrl":"https://affairs.com/wp-json/pys-facebook/v1/event","debug":""};
+//# sourceURL=jquery-core-js-extra
+/* ]]> */
+</script>
+<script id="jquery-core-js" src="https://affairs.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" type="text/javascript"></script>
+<script id="jquery-migrate-js" src="https://affairs.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" type="text/javascript"></script>
+<script id="jquery-ui-js" src="https://affairs.com/wp-content/themes/AffairsToRemember/js/jquery-ui.js?ver=6.9.1" type="text/javascript"></script>
+<script id="hammer-js" src="https://affairs.com/wp-content/themes/AffairsToRemember/js/hammer.min.js?ver=6.9.1" type="text/javascript"></script>
+<script id="jquery-bind-first-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/jquery.bind-first-0.2.3.min.js?ver=0.2.3" type="text/javascript"></script>
+<script id="js-cookie-pys-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/js.cookie-2.1.3.min.js?ver=2.1.3" type="text/javascript"></script>
+<script id="js-tld-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/tld.min.js?ver=2.3.1" type="text/javascript"></script>
+<script id="pys-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var pysOptions = {"staticEvents":{"facebook":{"init_event":[{"delay":0,"type":"static","ajaxFire":false,"name":"PageView","pixelIds":["808153248656066"],"eventID":"0ea8eafb-d957-42d8-9198-435a3262e562","params":{"page_title":"Home","post_type":"page","post_id":1024,"plugin":"PixelYourSite","user_role":"guest","event_url":"affairs.com/"},"e_id":"init_event","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""}]}},"dynamicEvents":[],"triggerEvents":[],"triggerEventTypes":[],"facebook":{"pixelIds":["808153248656066"],"advancedMatching":[],"advancedMatchingEnabled":true,"removeMetadata":true,"wooVariableAsSimple":false,"serverApiEnabled":true,"wooCRSendFromServer":false,"send_external_id":null,"enabled_medical":false,"do_not_track_medical_param":["event_url","post_title","page_title","landing_page","content_name","categories","category_name","tags"],"meta_ldu":false},"debug":"","siteUrl":"https://affairs.com","ajaxUrl":"https://affairs.com/wp-admin/admin-ajax.php","ajax_event":"b6856a734d","enable_remove_download_url_param":"1","cookie_duration":"7","last_visit_duration":"60","enable_success_send_form":"","ajaxForServerEvent":"1","ajaxForServerStaticEvent":"1","useSendBeacon":"1","send_external_id":"1","external_id_expire":"180","track_cookie_for_subdomains":"1","google_consent_mode":"1","gdpr":{"ajax_enabled":false,"all_disabled_by_api":false,"facebook_disabled_by_api":false,"analytics_disabled_by_api":false,"google_ads_disabled_by_api":false,"pinterest_disabled_by_api":false,"bing_disabled_by_api":false,"reddit_disabled_by_api":false,"externalID_disabled_by_api":false,"facebook_prior_consent_enabled":true,"analytics_prior_consent_enabled":true,"google_ads_prior_consent_enabled":null,"pinterest_prior_consent_enabled":true,"bing_prior_consent_enabled":true,"cookiebot_integration_enabled":false,"cookiebot_facebook_consent_category":"marketing","cookiebot_analytics_consent_category":"statistics","cookiebot_tiktok_consent_category":"marketing","cookiebot_google_ads_consent_category":"marketing","cookiebot_pinterest_consent_category":"marketing","cookiebot_bing_consent_category":"marketing","consent_magic_integration_enabled":false,"real_cookie_banner_integration_enabled":false,"cookie_notice_integration_enabled":false,"cookie_law_info_integration_enabled":false,"analytics_storage":{"enabled":true,"value":"granted","filter":false},"ad_storage":{"enabled":true,"value":"granted","filter":false},"ad_user_data":{"enabled":true,"value":"granted","filter":false},"ad_personalization":{"enabled":true,"value":"granted","filter":false}},"cookie":{"disabled_all_cookie":false,"disabled_start_session_cookie":false,"disabled_advanced_form_data_cookie":false,"disabled_landing_page_cookie":false,"disabled_first_visit_cookie":false,"disabled_trafficsource_cookie":false,"disabled_utmTerms_cookie":false,"disabled_utmId_cookie":false},"tracking_analytics":{"TrafficSource":"direct","TrafficLanding":"http://undefined","TrafficUtms":[],"TrafficUtmsId":[]},"GATags":{"ga_datalayer_type":"default","ga_datalayer_name":"dataLayerPYS"},"woo":{"enabled":false},"edd":{"enabled":false},"cache_bypass":"1773085170"};
+//# sourceURL=pys-js-extra
+/* ]]> */
+</script>
+<script id="pys-js" src="https://affairs.com/wp-content/plugins/pixelyoursite/dist/scripts/public.js?ver=11.2.0.3" type="text/javascript"></script>
+<link href="https://affairs.com/wp-json/" rel="https://api.w.org/"/><link href="https://affairs.com/wp-json/wp/v2/pages/1024" rel="alternate" title="JSON" type="application/json"/><link href="https://affairs.com/xmlrpc.php?rsd" rel="EditURI" title="RSD" type="application/rsd+xml"/>
+<meta content="WordPress 6.9.1" name="generator"/>
+<link href="https://affairs.com/" rel="shortlink"/>
+<style>img#wpstats{display:none}</style>
+<!-- Google Tag Manager for WordPress by gtm4wp.com -->
+<!-- GTM Container placement set to automatic -->
+<script data-cfasync="false" data-pagespeed-no-defer="" type="text/javascript">
+	var dataLayer_content = {"pagePostType":"frontpage","pagePostType2":"single-page","pagePostAuthor":"admin"};
+	dataLayer.push( dataLayer_content );
+</script>
+<script data-cfasync="false" data-pagespeed-no-defer="" type="text/javascript">
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TMHFJ9R7');
+</script>
+<!-- End Google Tag Manager for WordPress by gtm4wp.com --> <style id="wp-custom-css" type="text/css">
+			header nav ul > li {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+		</style>
+<noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript><style id="wpr-lazyload-bg-container"></style><style id="wpr-lazyload-bg-exclusion"></style>
+<noscript>
+<style id="wpr-lazyload-bg-nostyle">#please-wait .hourglass{--wpr-bg-115d4021-7eb3-4c0d-a05f-749a7f5bd129: url('https://affairs.com/wp-content/themes/AffairsToRemember/graphics/hourglass.png');}.rll-youtube-player .play{--wpr-bg-7f3a7451-c305-4115-ad29-9debf099b2f8: url('https://affairs.com/wp-content/plugins/wp-rocket/assets/img/youtube.png');}</style>
+</noscript>
+<script type="application/javascript">const rocket_pairs = [{"selector":"#please-wait .hourglass","style":"#please-wait .hourglass{--wpr-bg-115d4021-7eb3-4c0d-a05f-749a7f5bd129: url('https:\/\/affairs.com\/wp-content\/themes\/AffairsToRemember\/graphics\/hourglass.png');}","hash":"115d4021-7eb3-4c0d-a05f-749a7f5bd129","url":"https:\/\/affairs.com\/wp-content\/themes\/AffairsToRemember\/graphics\/hourglass.png"},{"selector":".rll-youtube-player .play","style":".rll-youtube-player .play{--wpr-bg-7f3a7451-c305-4115-ad29-9debf099b2f8: url('https:\/\/affairs.com\/wp-content\/plugins\/wp-rocket\/assets\/img\/youtube.png');}","hash":"7f3a7451-c305-4115-ad29-9debf099b2f8","url":"https:\/\/affairs.com\/wp-content\/plugins\/wp-rocket\/assets\/img\/youtube.png"}]; const rocket_excluded_pairs = [];</script><meta content="WP Rocket 3.20.5" data-wpr-features="wpr_lazyload_css_bg_img wpr_lazyload_images wpr_lazyload_iframes wpr_preconnect_external_domains wpr_oci wpr_image_dimensions wpr_preload_links wpr_desktop" name="generator"/></head>
+<body data-burst_id="1024" data-burst_type="page" data-rsssl="1">
+<div id="fb-root"></div><script async="" crossorigin="anonymous" defer="" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v3.0"></script>
+<header class="with-slideshow">
+<div id="header-logo">
+<div id="nav-icon">
+<div class="three-lines"></div>
+<div class="x-mark"></div>
+<div class="bar" id="upper-bar"><div class="bar-inner"></div></div>
+<div class="bar" id="middle-bar"><div class="bar-inner"></div></div>
+<div class="bar" id="lower-bar"><div class="bar-inner"></div></div>
+</div>
+<a href="https://affairs.com"><img height="90" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/logo.svg" width="300"/></a>
+<div id="nav-icon"></div>
+</div>
+<nav class="with-slideshow" id="main-nav">
+<ul class="" id="main-navigation"><li aria-label="Main" class="main-nav-item" id="1379" role="navigation"><a class="main-nav-link" href="https://affairs.com/about/"><div class="main-nav-block">About</div></a><div class="sub-nav" id="sub-nav-1379"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/our-story/">Our Story</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/team/meet-the-makers/">Meet The Makers</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/legacy-green/">Sustainability Program</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/safety-guidelines/">Safety Guidelines</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/sustainability/">Sustainability</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/lifestyle/">Leadership &amp; Community</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/legacy-giving/">Giving Program</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1359" role="navigation"><a class="main-nav-link" href="https://affairs.com/catering/"><div class="main-nav-block">Catering</div></a><div class="sub-nav" id="sub-nav-1359"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/menus/menus/">Menus</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1154" role="navigation"><a class="main-nav-link" href="https://affairs.com/full-event-production/"><div class="main-nav-block">Full Service Event Planning</div></a><div class="sub-nav" id="sub-nav-1154"><ul class="sub-nav-list"></ul></div></li><li aria-label="Main" class="main-nav-item" id="1140" role="navigation"><a class="main-nav-link" href="https://affairs.com/venues/venues/"><div class="main-nav-block">Venues</div></a><div class="sub-nav" id="sub-nav-1140"><ul class="sub-nav-list"></ul></div></li><li aria-label="Main" class="main-nav-item" id="1179" role="navigation"><a class="main-nav-link" href="https://affairs.com/galleries/"><div class="main-nav-block">Galleries</div></a><div class="sub-nav" id="sub-nav-1179"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/gallery/social/">Social</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/gallery/food/">Food</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/gallery/corporate/">Corporate</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1359" role="navigation"><a class="main-nav-link" href="https://affairs.com/catering/"><div class="main-nav-block">ADDITIONAL SERVICES</div></a><div class="sub-nav" id="sub-nav-1359"><ul class="sub-nav-list"><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/bar-services/">Bar Management</a></li><li aria-label="Submenu" class="sub-nav-item" role="navigation"><a href="https://affairs.com/venue-management/">Venue Management</a></li></ul></div></li><li aria-label="Main" class="main-nav-item" id="1148" role="navigation"><a class="main-nav-link" href="https://affairs.com/contact/contact-us/"><div class="main-nav-block">Contact Us</div></a><div class="sub-nav" id="sub-nav-1148"><ul class="sub-nav-list"></ul></div></li></ul> </nav>
+<div class="delay-animation fade-animation" id="slideshow">
+<div class="fade-item slide" id="slideshow-0">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/129A1715-240x140.jpg">
+<img alt="" class="slideshow-image" fetchpriority="high" src="https://affairs.com/wp-content/uploads/2020/12/129A1715-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-1">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/Legendary-027-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-2">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-1200x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/190811GEO-SB1_DFM_074.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-3">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/Lindsay-697-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+<div class="fade-item slide" id="slideshow-4">
+<picture>
+<source media="(max-width:1920px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1920x1080.jpg">
+<source media="(max-width:1600px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1600x900.jpg">
+<source media="(max-width:1280px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1280x720.jpg">
+<source media="(max-width:960px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-960x540.jpg">
+<source media="(max-width:720px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-720x400.jpg">
+<source media="(max-width:640px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-640x360.jpg">
+<source media="(max-width:480px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-480x270.jpg">
+<source media="(max-width:360px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-360x200.jpg">
+<source media="(max-width:240px)" srcset="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-240x140.jpg">
+<img alt="" class="slideshow-image" src="https://affairs.com/wp-content/uploads/2020/12/ArtofFashion-280-1920x1080.jpg"/>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+</div>
+</header>
+<div id="content">
+<section class="section copy third" id="section-0" style="background-color: #f8f4ef !important;">
+<div class="section-box">
+<div class="copy-block color-change">
+<p>AFFAIRS to REMEMBER is Atlanta’s most sustainable and luxurious catering and event producer with over 40 years of industry experience. Our success is attributable to our innovative menus, impeccable service, inspiring reliability, and immaculate attention to detail.</p>
+</div>
+<div class="quick-links">
+<ul>
+<li>
+<a href="https://affairs.com/our-story/"><h3>About Us</h3></a>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section class="section arrow-box testimonials full" id="section-2" style="background-color: #6c7830 !important;">
+<div class="arrows active-arrows animated">
+<div class="left-arrow arrow color-change"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" height="18" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2049%2018'%3E%3C/svg%3E" width="49"/><noscript><img height="18" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" width="49"/></noscript></div>
+<div class="arrows-mask"> <ul class="testimonial-list">
+<li class="testimonial" id="section-2-0">
+<div class="testimonial-copy color-change">
+<span style="color: #ffffff;"><em><span style="font-family: georgia, palatino, serif; font-size: 18pt;">"<b>Everyone had a <span style="color: #ffffff;">wonderful</span> time, and things went perfectly and smoothly without a hitch. Everything we planned was executed beautifully!</b></span></em></span>
+<p class="MsoNormal"></p> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>E. Hershman</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+<li class="testimonial" id="section-2-1">
+<div class="testimonial-copy color-change">
+<em><span style="font-family: georgia, palatino, serif; font-size: 18pt;"><b>"From the meticulous planning to the seamless execution, every detail was handled with the utmost care and professionalism. The event was absolutely fantastic, and it was clear that a lot of hard work and effort went into making it such a memorable occasion."</b></span></em> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>L. Johnson</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+<li class="testimonial" id="section-2-2">
+<div class="testimonial-copy color-change">
+<span style="color: #000000; font-size: 18pt; font-family: georgia, palatino, serif;"><strong><span style="color: #ffffff;">...<em><span style="color: #ffffff;">..</span>.</em></span></strong><span style="color: #ffffff;"><em><b>"the event was a BIG success and I know you all were a part of the reason why. Thanks again for helping us curate a wonderful event, recommendations, and flexibility with last-minute requests</b></em></span></span><span style="color: #ffffff;"><em><b style="font-family: georgia, palatino, serif; font-size: 18pt;"><span style="font-size: 18pt; font-family: georgia, palatino, serif;">". th</span>e utmost care and professionalism. The event was absolutely fantastic, and it was clear that a lot of hard work and effort went into making it such a memorable occasion."</b></em></span>
+<p class="MsoNormal"></p> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>D. Deloach</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+<li class="testimonial" id="section-2-3">
+<div class="testimonial-copy color-change">
+<p class="MsoNormal"><span style="color: #ffffff;"><em><span style="font-size: 18pt; font-family: georgia, palatino, serif;"><b>"Sending you all my appreciation for making our Holiday Party one of the Best Ever.  Truly grateful for the absolutely exceptional service you provided. Your team's performance was nothing short of brilliant."</b></span></em></span></p>
+<p class="MsoNormal"></p> </div>
+<div class="testimonial-attribution color-change"><span class="fleuron">~</span>J. Godsell</div>
+<div class="testimonial-date color-change">December 2025					</div>
+</li>
+</ul>
+</div>
+<div class="right-arrow arrow color-change"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" height="18" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2049%2018'%3E%3C/svg%3E" width="49"/><noscript><img height="18" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/arrow.svg" width="49"/></noscript></div> </div>
+</section>
+<section class="section photo-single twothirds" id="section-4">
+<div class="section-box">
+<div class="photo-single-box" id="1031">
+<picture>
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:1440px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:1280px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:1024px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:960px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-960x800.jpg" media="(min-width:640px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" media="(min-width:560px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-480x480.jpg" media="(min-width:480px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-360x360.jpg" media="(min-width:360px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095-240x240.jpg" media="(min-width:10px)">
+<img alt="" data-lazy-src="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" title="Springer-Mountain-Chicken-Pot-Pie_095"/><noscript><img alt="" src="https://affairs.com/wp-content/uploads/2020/12/Springer-Mountain-Chicken-Pot-Pie_095.jpg" title="Springer-Mountain-Chicken-Pot-Pie_095"/></noscript>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+</div>
+</section>
+<section class="section copy third" id="section-5" style="background-color: #ececec !important;">
+<div class="section-box">
+<h2 class="color-change" id="Catering">Catering</h2>
+<div class="copy-block color-change">
+<p>We pride ourselves on our award-winning menus crafted by our inspired chefs. Delicious, sustainable, and totally customizable, we have the perfect menu for your special event.</p>
+</div>
+<div class="quick-links">
+<ul>
+<li>
+<a href="https://affairs.com/menus/menus/"><h3>Menus</h3></a>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section class="section copy half" id="section-6" style="background-color: #f8f4ef !important;">
+<div class="section-box">
+<h2 class="color-change" id="Service Portfolio">Service Portfolio</h2>
+<div class="copy-block color-change">
+<p>Our Full Event Production meets the challenge of designing, managing, and orchestrating your special event with decades of industry experience and a highly dedicated team.</p>
+</div>
+<div class="quick-links">
+<ul>
+<li>
+<a href="https://affairs.com/full-event-production/"><h3>Full Event Production</h3></a>
+</li>
+<li>
+<a href="https://affairs.com/venue-management/"><h3>Venue Management</h3></a>
+</li>
+<li>
+<a href="https://affairs.com/bar-services/"><h3>Bar Management Services</h3></a>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section class="section photo-single half" id="section-8">
+<div class="section-box">
+<div class="photo-single-box" id="1032">
+<picture>
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:1440px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:1280px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:1024px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:960px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-960x960.jpg" media="(min-width:640px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" media="(min-width:560px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-480x480.jpg" media="(min-width:480px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-360x360.jpg" media="(min-width:360px)">
+<source data-lazy-srcset="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001-240x240.jpg" media="(min-width:10px)">
+<img alt="" data-lazy-src="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" title="Atlanta Small Business Masterclass"/><noscript><img alt="" src="https://affairs.com/wp-content/uploads/2020/12/USC1010917_001.jpg" title="Atlanta Small Business Masterclass"/></noscript>
+</source></source></source></source></source></source></source></source></source></picture>
+</div>
+</div>
+</section>
+</div>
+</body>
+<footer>
+
+<noscript><img alt="" height="1" src="https://www.facebook.com/tr?id=808153248656066&amp;ev=PageView&amp;noscript=1&amp;cd%5Bpage_title%5D=Home&amp;cd%5Bpost_type%5D=page&amp;cd%5Bpost_id%5D=1024&amp;cd%5Bplugin%5D=PixelYourSite&amp;cd%5Buser_role%5D=guest&amp;cd%5Bevent_url%5D=affairs.com%2F" style="display: none;" width="1"/></noscript>
+<script id="rocket-browser-checker-js-after" type="text/javascript">
+/* <![CDATA[ */
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+//# sourceURL=rocket-browser-checker-js-after
+/* ]]> */
+</script>
+<script id="rocket-preload-links-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"/(?:.+/)?feed(?:/(?:.+/?)?)?$|/(?:.+/)?embed/|/(index.php/)?(.*)wp-json(/.*|$)|/refer/|/go/|/recommend/|/recommends/","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php|html|htm","siteUrl":"https://affairs.com","onHoverDelay":"100","rateThrottle":"3"};
+//# sourceURL=rocket-preload-links-js-extra
+/* ]]> */
+</script>
+<script id="rocket-preload-links-js-after" type="text/javascript">
+/* <![CDATA[ */
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+
+//# sourceURL=rocket-preload-links-js-after
+/* ]]> */
+</script>
+<script id="rocket_lazyload_css-js-extra" type="text/javascript">
+/* <![CDATA[ */
+var rocket_lazyload_css_data = {"threshold":"300"};
+//# sourceURL=rocket_lazyload_css-js-extra
+/* ]]> */
+</script>
+<script id="rocket_lazyload_css-js-after" type="text/javascript">
+/* <![CDATA[ */
+!function o(n,c,a){function u(t,e){if(!c[t]){if(!n[t]){var r="function"==typeof require&&require;if(!e&&r)return r(t,!0);if(s)return s(t,!0);throw(e=new Error("Cannot find module '"+t+"'")).code="MODULE_NOT_FOUND",e}r=c[t]={exports:{}},n[t][0].call(r.exports,function(e){return u(n[t][1][e]||e)},r,r.exports,o,n,c,a)}return c[t].exports}for(var s="function"==typeof require&&require,e=0;e<a.length;e++)u(a[e]);return u}({1:[function(e,t,r){"use strict";{const c="undefined"==typeof rocket_pairs?[]:rocket_pairs,a=(("undefined"==typeof rocket_excluded_pairs?[]:rocket_excluded_pairs).map(t=>{var e=t.selector;document.querySelectorAll(e).forEach(e=>{e.setAttribute("data-rocket-lazy-bg-"+t.hash,"excluded")})}),document.querySelector("#wpr-lazyload-bg-container"));var o=rocket_lazyload_css_data.threshold||300;const u=new IntersectionObserver(e=>{e.forEach(t=>{t.isIntersecting&&c.filter(e=>t.target.matches(e.selector)).map(t=>{var e;t&&((e=document.createElement("style")).textContent=t.style,a.insertAdjacentElement("afterend",e),t.elements.forEach(e=>{u.unobserve(e),e.setAttribute("data-rocket-lazy-bg-"+t.hash,"loaded")}))})})},{rootMargin:o+"px"});function n(){0<(0<arguments.length&&void 0!==arguments[0]?arguments[0]:[]).length&&c.forEach(t=>{try{document.querySelectorAll(t.selector).forEach(e=>{"loaded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&"excluded"!==e.getAttribute("data-rocket-lazy-bg-"+t.hash)&&(u.observe(e),(t.elements||=[]).push(e))})}catch(e){console.error(e)}})}n(),function(){const r=window.MutationObserver;return function(e,t){if(e&&1===e.nodeType)return(t=new r(t)).observe(e,{attributes:!0,childList:!0,subtree:!0}),t}}()(document.querySelector("body"),n)}},{}]},{},[1]);
+//# sourceURL=rocket_lazyload_css-js-after
+/* ]]> */
+</script>
+<script id="page-script-js" src="https://affairs.com/wp-content/themes/AffairsToRemember/script.js?ver=6.9.1" type="text/javascript"></script>
+<script id="jetpack-stats-js-before" type="text/javascript">
+/* <![CDATA[ */
+_stq = window._stq || [];
+_stq.push([ "view", {"v":"ext","blog":"246241674","post":"1024","tz":"0","srv":"affairs.com","j":"1:15.6"} ]);
+_stq.push([ "clickTrackerInit", "246241674", "1024" ]);
+//# sourceURL=jetpack-stats-js-before
+/* ]]> */
+</script>
+<script data-wp-strategy="defer" defer="defer" id="jetpack-stats-js" src="https://stats.wp.com/e-202611.js" type="text/javascript"></script>
+<script>window.lazyLoadOptions=[{elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}},{elements_selector:".rocket-lazyload",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,}];window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(var i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
+if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
+images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
+if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script async="" data-no-minify="1" src="https://affairs.com/wp-content/plugins/wp-rocket/assets/js/lazyload/17.8.3/lazyload.min.js"></script><script>function lazyLoadThumb(e,alt,l){var t='<img data-lazy-src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"><noscript><img src="https://i.ytimg.com/vi/ID/hqdefault.jpg" alt="" width="480" height="360"></noscript>',a='<button class="play" aria-label="Play Youtube video"></button>';if(l){t=t.replace('data-lazy-','');t=t.replace('loading="lazy"','');t=t.replace(/<noscript>.*?<\/noscript>/g,'');}t=t.replace('alt=""','alt="'+alt+'"');return t.replace("ID",e)+a}function lazyLoadYoutubeIframe(){var e=document.createElement("iframe"),t="ID?autoplay=1";t+=0===this.parentNode.dataset.query.length?"":"&"+this.parentNode.dataset.query;e.setAttribute("src",t.replace("ID",this.parentNode.dataset.src)),e.setAttribute("frameborder","0"),e.setAttribute("allowfullscreen","1"),e.setAttribute("allow","accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"),this.parentNode.parentNode.replaceChild(e,this.parentNode)}document.addEventListener("DOMContentLoaded",function(){var exclusions=[];var e,t,p,u,l,a=document.getElementsByClassName("rll-youtube-player");for(t=0;t<a.length;t++)(e=document.createElement("div")),(u='https://i.ytimg.com/vi/ID/hqdefault.jpg'),(u=u.replace('ID',a[t].dataset.id)),(l=exclusions.some(exclusion=>u.includes(exclusion))),e.setAttribute("data-id",a[t].dataset.id),e.setAttribute("data-query",a[t].dataset.query),e.setAttribute("data-src",a[t].dataset.src),(e.innerHTML=lazyLoadThumb(a[t].dataset.id,a[t].dataset.alt,l)),a[t].appendChild(e),(p=e.querySelector(".play")),(p.onclick=lazyLoadYoutubeIframe)});</script>
+<div class="contact-form-container">
+<form action="https://affairs.com/wp-content/themes/AffairsToRemember/contact-form.php" id="contact-form" method="post">
+<h3>Contact Us</h3>
+<input id="originating-page" name="page" type="hidden" value="Home"/>
+<label for="name-first">First Name *
+				<input class="contact-reset" id="name-first" name="name_first" type="text" value=""/>
+<div class="contact-warning" id="name-first-warning">Please tell us your first name.</div>
+</label>
+<label for="name-last">Last Name *
+				<input class="contact-reset" id="name-last" name="name_last" type="text" value=""/>
+<div class="contact-warning" id="name-last-warning">Please tell us your last name.</div>
+</label>
+<label for="organization-company">Organization/Company
+				<input class="contact-reset" id="organization-company" name="organization_company" type="text" value=""/>
+</label>
+<label for="email">Email *
+				<input class="contact-reset" id="email" name="email" type="email" value=""/>
+<div class="contact-warning" id="email-warning">Please give us an email address where we can reach you.</div>
+</label>
+<label for="phone">Phone Number *
+				<input class="contact-reset" id="phone" name="phone" type="tel" value=""/>
+<div class="contact-warning" id="phone-warning">Please give us a phone number where we can reach you.</div>
+</label>
+<label for="contact-time">Best Time to Contact
+				<select id="contact-time" name="contact_time">
+<option value="Anytime">Anytime</option>
+<option value="Morning">Morning</option>
+<option value="Afternoon">Afternoon</option>
+</select>
+</label>
+<label for="event-date">Event Date
+				<input id="event-date" name="event_date" type="date" value=""/>
+</label>
+<label for="be-of-service">How Can We Be of Service? *
+				<textarea class="contact-reset" id="be-of-service" name="be_of_service" value=""></textarea>
+<div class="contact-warning" id="be-of-service-warning">How can we be of service?</div>
+</label>
+<div class="google">
+<script>
+var $ = jQuery.noConflict(); 
+var googleRecaptcha;
+var onloadCallback = function() {
+	googleRecaptcha = grecaptcha.render( document.getElementById( 'google-recaptcha' ), {
+		'sitekey' : '6LdJxyQaAAAAAMzBJOe74_PEBRFEPutRTHSQ2ENk'
+	});
+};
+$(document).ready(function(){
+	var hourglassDegree = 0, hourglassTimer;
+	function hourglassRotate() {
+		$('.hourglass').css({ transform: 'rotate(' + hourglassDegree + 'deg)'});  
+		$('.hourglass').css({ '-moz-transform': 'rotate(' + hourglassDegree + 'deg)'});                      
+		hourglassTimer = setTimeout(function() {
+			++hourglassDegree; hourglassRotate();
+		},1);
+	}
+	function openPleaseWait(){ 
+		$('#please-wait').css( 'display', 'flex' );
+		hourglassRotate();
+	}
+	$(window).unload( function(){
+		$('#please-wait').hide();
+	}); 
+	$('#please-wait').hide();
+	$('#contact-form').on( 'click', '#contact-send', function(event){
+		event.preventDefault();
+		$('.contact-warning').hide( 0 );
+		$('.contact-reset').css( 'border', 'none' );
+		if( $('#name-first').val() ){
+			if( $('#name-last').val() ){
+				if( $('#email').val() ){
+					if( $('#phone').val() ){
+						if( $('#be-of-service').val() ){
+							var captchaResponse = grecaptcha.getResponse( googleRecaptcha );
+							if( captchaResponse ){
+								openPleaseWait();
+								document.getElementById("contact-form").submit();
+								return true;
+							}else{
+								$('#google-recaptcha').css('border', '1px solid red');
+								$('#captcha-warning').css( 'display', 'block' );
+							}						
+						}else{
+							$('#be-of-service').css('border', '1px solid red');
+							$('#be-of-service-warning').show( 0 );
+						}
+					}else{
+						$('#phone').css('border', '1px solid red');
+						$('#phone-warning').show( 0 );
+					}
+				}else{
+					$('#email').css('border', '1px solid red');
+					$('#email-warning').show( 0 );
+				}
+			}else{
+				$('#name-last').css('border', '1px solid red');
+				$('#name-last-warning').show( 0 );
+			}
+		}else{ 
+			$('#name-first').css('border', '1px solid red');
+			$('#name-first-warning').show( 0 );
+		}
+	});
+});
+				</script>
+<div class="g-recaptcha contact-reset" id="google-recaptcha"></div>
+<div class="contact-warning" id="captcha-warning">Please verify by checking the box above.</div>
+</div>
+<button id="contact-send"><h2>SEND</h2></button>
+<div id="please-wait"><div class="message"></div><div class="hourglass"></div></div>
+</form>
+<script async="" defer="" src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&amp;render=explicit"></script>
+</div>
+<div id="footer-address">
+<img height="90" id="footer-logo" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/logo.svg" width="300"/>
+<p>2316 DeFoor Hills Road NW</p>
+<p>Atlanta, Georgia 30318-2206</p>
+<p><a href="tel:(404) 872-7859">(404) 872-7859</a></p>
+<p><a href="mailto:events@affairs.com">events@affairs.com</a></p>
+</div>
+<div id="footer-nav">
+<ul class="" id="footer-nav-list"><li class="footer-nav-item selected" id="1024" role="navigation"><a class="footer-nav-link" href="https://affairs.com/">Home</a></li><li class="footer-nav-item" id="1379" role="navigation"><a class="footer-nav-link" href="https://affairs.com/about/">About</a></li><li class="footer-nav-item" id="1359" role="navigation"><a class="footer-nav-link" href="https://affairs.com/catering/">Catering</a></li><li class="footer-nav-item" id="1150" role="navigation"><a class="footer-nav-link" href="https://affairs.com/service-portfolio/">Service Portfolio</a></li><li class="footer-nav-item" id="1179" role="navigation"><a class="footer-nav-link" href="https://affairs.com/galleries/">Galleries</a></li><li class="footer-nav-item" id="1367" role="navigation"><a class="footer-nav-link" href="https://affairs.com/sustainability/">Sustainability</a></li><li class="footer-nav-item" id="1148" role="navigation"><a class="footer-nav-link" href="https://affairs.com/contact/contact-us/">Contact Us</a></li><li class="footer-nav-item" id="2063" role="navigation"><a class="footer-nav-link" href="https://affairs.com/careers/career-opportunities/">Career Opportunities</a></li><li class="footer-nav-item" id="1965" role="navigation"><a class="footer-nav-link" href="https://affairs.com/privacy-policy/">Privacy Policy</a></li></ul> </div>
+<div id="footer-social">
+<p>FOLLOW US ON:</p>
+<ul id="social-icons">
+<li class="social-media-icon">
+<a href="https://www.facebook.com/affairs.to.remember.atl/?epa=SEARCH_BOX"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/facebook.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/facebook.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.instagram.com/_affairs_to_remember_/ "><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/instagram.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/instagram.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.yelp.com/biz/affairs-to-remember-atlanta "><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/yelp.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/yelp.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.linkedin.com/company/affairs-to-remember-caterers/?viewAsMember=true"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/linkedin.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/linkedin.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://twitter.com/AffairsCaterers"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/twitter.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/twitter.svg" width="45"/></noscript></a>
+</li>
+<li class="social-media-icon">
+<a href="https://www.youtube.com/channel/UC6CUNviYotwzl7-H7bjnufQ"><img data-lazy-src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/youtube.svg" height="45" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2045%2045'%3E%3C/svg%3E" width="45"/><noscript><img height="45" src="https://affairs.com/wp-content/themes/AffairsToRemember/graphics/youtube.svg" width="45"/></noscript></a>
+</li>
+</ul>
+</div>
+</footer>
+<div id="copyright">
+<p>Copyright © 2026 Affairs to Remember.</p>
+<p>Website created by <a href="http://hemispheresunlimited.com">Hemispheres Unlimited</a>.</p>
+</div>
+</html>
+<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me - Debug: cached@1773085171 --></div>
+              </div>
+              <div id="chat-container-desktop" class="chat-container-wrapper"></div>
+            </div>
+            <!-- Desktop Stand -->
+            <div class="flex flex-col items-center">
+              <div class="w-48 h-12 bg-gradient-to-b from-[#222] to-[#111] relative -mt-1 shadow-2xl">
+                  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-72 h-3 bg-[#0a0a0a] rounded-t-xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Chat Template -->
+  <template id="chat-template">
+    <div class="chat-container">
+        <div class="chat-window hidden flex flex-col bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden mb-5">
+            <div class="px-5 py-4 flex items-center justify-between text-white font-bold text-sm shrink-0 shadow-lg" style="background-color: #6a762f">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                    Live Agent
+                </div>
+                <button onclick="toggleChat(this)" class="hover:bg-black/10 p-1.5 rounded-md transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="flex-1 w-full bg-white relative">
+                <iframe src="https://flowise.adamscottryals.com/chatbot/c1b5691e-e5b6-4929-a799-87f1d1d2c93a" style="border:none;width:100%;height:100%;"></iframe>
+            </div>
+        </div>
+        
+        <button onclick="toggleChat(this)" class="w-12 h-12 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 group overflow-hidden relative" style="background-color: #6a762f">
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/8 transition-colors"></div>
+            <span class="bubble-icon">
+                <img src="https://cdn-icons-png.flaticon.com/128/1370/1370907.png" class="w-8 h-8 object-contain" />
+            </span>
+            <span class="close-icon hidden">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </span>
+        </button>
+    </div>
+  </template>
+
+  <script>
+    function setDevice(device) {
+        const phoneView = document.getElementById('phone-view');
+        const desktopView = document.getElementById('desktop-view');
+        const btnPhone = document.getElementById('btn-phone');
+        const btnDesktop = document.getElementById('btn-desktop');
+        const sidebar = document.getElementById('content-sidebar');
+        const mainLayout = document.getElementById('main-layout');
+        const previewArea = document.getElementById('preview-area');
+        
+        const activeClass = "flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm bg-white text-[#0088ff] shadow-sm font-bold";
+        const inactiveClass = "flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm text-slate-500 hover:text-slate-700";
+
+        if (device === 'phone') {
+            phoneView.classList.remove('hidden');
+            desktopView.classList.add('hidden');
+            btnPhone.className = activeClass;
+            btnDesktop.className = inactiveClass;
+            
+            mainLayout.className = "flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 mt-12 lg:mt-20";
+            sidebar.className = "flex-1 flex flex-col space-y-6 w-full text-center lg:text-left max-w-lg";
+            previewArea.className = "flex-1 flex flex-col items-center w-full space-y-4 lg:items-end";
+        } else {
+            phoneView.classList.add('hidden');
+            desktopView.classList.remove('hidden');
+            btnDesktop.className = activeClass;
+            btnPhone.className = inactiveClass;
+            
+            mainLayout.className = "flex flex-col items-center justify-between gap-12 lg:gap-24 mt-12 lg:mt-20";
+            sidebar.className = "flex-1 flex flex-col space-y-6 w-full text-center max-w-3xl";
+            previewArea.className = "flex-1 flex flex-col items-center w-full space-y-4";
+        }
+    }
+
+    function toggleChat(btn) {
+        const container = btn.closest('.chat-container');
+        const window = container.querySelector('.chat-window');
+        const bubbleIcon = container.querySelector('.bubble-icon');
+        const closeIcon = container.querySelector('.close-icon');
+        
+        if (window.classList.contains('hidden')) {
+            window.classList.remove('hidden');
+            bubbleIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+        } else {
+            window.classList.add('hidden');
+            bubbleIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        }
+    }
+
+    // Initialize chat
+    const template = document.getElementById('chat-template');
+    document.getElementById('chat-container-phone').appendChild(template.content.cloneNode(true));
+    document.getElementById('chat-container-desktop').appendChild(template.content.cloneNode(true));
+
+    // Shadow DOM fix for standalone
+    function setupShadow(hostId) {
+        const host = document.getElementById(hostId);
+        if (host && host.innerHTML.trim() !== "") {
+            const content = host.innerHTML;
+            const shadow = host.attachShadow({mode: 'open'});
+            const wrapper = document.createElement('div');
+            wrapper.style.width = '100%';
+            wrapper.innerHTML = content;
+            shadow.appendChild(wrapper);
+            host.innerHTML = '';
+        }
+    }
+    
+    // Wait for content to be ready
+    setTimeout(() => {
+        setupShadow('extracted-content-mobile');
+        setupShadow('extracted-content-desktop');
+    }, 10);
+  </script>
+</body>
+</html>
