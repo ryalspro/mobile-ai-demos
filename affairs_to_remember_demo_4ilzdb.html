@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFFAIRS to REMEMBER - Personalized Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+    
+    .iphone-frame {
+      position: relative; margin-left: auto; margin-right: auto; border: 12px solid #1c1c1e; background: #1c1c1e;
+      border-radius: 3.5rem; height: 844px; width: 390px;
+      box-shadow: 0 50px 100px -20px rgba(0,0,0,0.45), 0 30px 60px -30px rgba(0,0,0,0.3);
+      transform: scale(0.85); transform-origin: top; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @media (min-width: 1024px) { .iphone-frame { transform: scale(0.95); margin-left: auto; margin-right: 0; } }
+    .iphone-frame:hover { transform: scale(0.87); }
+    @media (min-width: 1024px) { .iphone-frame:hover { transform: scale(0.98); } }
+    
+    /* Mobile-on-Mobile Scaling */
+    @media (max-width: 500px) {
+      .iphone-frame {
+        transform: scale(calc(100vw / 440)) translateY(-5%);
+        transform-origin: top center;
+        margin-bottom: -150px; /* Offset the scale empty space */
+      }
+      #preview-area { padding-top: 2rem; }
+      #content-sidebar { order: 2; }
+      #preview-area { order: 1; }
+      #preview-area > div:first-child { display: none; } /* Hide toggle on small phones */
+    }
+    
+    .iphone-screen { border-radius: 2.75rem; overflow: hidden; width: 100%; height: 100%; background: white; position: relative; display: flex; flex-direction: column; }
+    
+    .desktop-frame {
+      position: relative; width: 100%; max-width: 1100px;
+      margin: 0 auto; transition: all 0.5s ease;
+    }
+    
+    .desktop-screen {
+      border: 8px solid #222; background: #111; border-radius: 1.5rem;
+      width: 100%; aspect-ratio: 16/10; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden; display: flex; flex-direction: column;
+      position: relative;
+    }
+
+    .chat-container-wrapper {
+        position: absolute; inset: 0; pointer-events: none; z-index: 50;
+    }
+
+    .chat-container {
+        position: absolute; bottom: 16px; right: 16px; pointer-events: auto;
+        display: flex; flex-direction: column; align-items: flex-end;
+    }
+
+    .iphone-frame .chat-window { width: 280px !important; height: 480px !important; }
+    .desktop-frame .chat-window { width: 400px !important; height: 440px !important; }
+
+    .hidden { display: none !important; }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+    /* Premium Hero Styles */
+    @keyframes mesh {
+      0% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(40px,-60px) scale(1.2); }
+      66% { transform: translate(-30px,30px) scale(0.8); }
+      100% { transform: translate(0,0) scale(1); }
+    }
+    .mesh-blob { 
+      animation: mesh 25s infinite alternate; 
+      filter: blur(60px); 
+      opacity: 0.12; 
+      pointer-events: none;
+      will-change: transform;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.08);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #0f172a, #334155);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .pulse-dot {
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 #6a762f66; }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 136, 255, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 136, 255, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50/50 text-slate-900 border-t-8 relative overflow-x-hidden" style="border-color: #6a762f">
+  <!-- Mesh Background -->
+  <div class="absolute top-[-200px] left-[-100px] w-[800px] h-[800px] bg-blue-500 rounded-full mesh-blob -z-10"></div>
+  <div class="absolute top-0 right-[-100px] w-[700px] h-[700px] bg-indigo-400 rounded-full mesh-blob -z-10" style="animation-delay: -7s"></div>
+
+  <div class="w-full max-w-7xl mx-auto px-6 py-8 md:py-12">
+    <!-- Horizontal Hero Showcase Card -->
+    <div class="max-w-6xl mx-auto glass-card rounded-[2.5rem] p-8 md:p-12 mb-12 relative overflow-hidden flex flex-col items-center border-t-4" style="border-top-color: #0f172a">
+      <div class="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-black/[0.01] pointer-events-none"></div>
+      
+      <header class="relative z-10 w-full flex flex-col items-center">
+        <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/90 border border-slate-100 mb-6 shadow-md shadow-blue-500/5">
+          <div class="w-2 h-2 rounded-full bg-[#0088ff] pulse-dot"></div>
+          <span class="text-[10px] font-black text-slate-900 uppercase tracking-[0.3em]">Never miss a call or lead again!</span>
+        </div>
+        
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 w-full">
+          <h2 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-none text-gradient shrink-0">
+            AFFAIRS to REMEMBER
+          </h2>
+          
+          <div class="hidden md:block w-px h-12 bg-slate-200 opacity-50"></div>
+          
+          <p class="text-slate-500 text-lg md:text-xl font-medium max-w-xl leading-tight opacity-90 text-center md:text-left">
+            AI Chat features for your website
+          </p>
+        </div>
+      </header>
+    </div>
+
+    <!-- Main Layout -->
+    <main id="main-layout" class="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 mt-12 lg:mt-20">
+      
+      <!-- Left Content -->
+      <div id="content-sidebar" class="flex-1 flex flex-col space-y-6 w-full text-center lg:text-left max-w-lg transition-all duration-500">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
+          Meet Your <span class="text-[#0088ff]">AI Employee</span>
+        </h1>
+        <h3 class="text-xl md:text-2xl font-bold text-slate-800">
+          <span class="text-[#0088ff]">Chat</span> with it. <span class="text-[#0088ff]">Talk</span> to it.
+        </h3>
+        <div class="space-y-6 text-lg text-slate-600 font-medium leading-relaxed">
+          <p>Role-play real customer conversations for your business, right now.</p>
+          <p>Tap the phone to choose <span class="text-[#0088ff]">Chat</span> or <span class="text-[#0088ff]">Voice</span> and experience your AI employee in action.</p>
+        </div>
+        <div class="pt-8 opacity-80 lg:mx-0 mx-auto">
+           <p class="text-sm text-slate-400 italic leading-relaxed max-w-md mx-auto lg:mx-0">
+            This is an example personalized demo preview. When you become a customer your Live AI employees are fully trained on your business, services, FAQs, and booking system.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Preview Area -->
+      <div id="preview-area" class="flex-1 flex flex-col items-center w-full space-y-4 lg:items-end transition-all duration-500">
+        
+        <!-- Device Toggle -->
+        <div class="flex bg-slate-100 p-1 rounded-lg self-center lg:self-end">
+            <button onclick="setDevice('phone')" id="btn-phone" class="flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm bg-white text-[#0088ff] shadow-sm font-bold">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                <span>Mobile</span>
+            </button>
+            <button onclick="setDevice('desktop')" id="btn-desktop" class="flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm text-slate-500 hover:text-slate-700">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                <span>Desktop</span>
+            </button>
+        </div>
+
+        <div class="w-full flex justify-center lg:justify-end">
+          <!-- Phone View -->
+          <div id="phone-view" class="iphone-frame">
+            <div class="h-[40px] w-[4px] bg-[#2c2c2e] absolute -left-[16px] top-[100px] rounded-l-lg opacity-40"></div>
+            <div class="h-[65px] w-[4px] bg-[#2c2c2e] absolute -left-[16px] top-[170px] rounded-l-lg opacity-40"></div>
+            <div class="h-[65px] w-[4px] bg-[#2c2c2e] absolute -left-[16px] top-[245px] rounded-l-lg opacity-40"></div>
+            <div class="h-[95px] w-[4px] bg-[#2c2c2e] absolute -right-[16px] top-[190px] rounded-r-lg opacity-40"></div>
+            
+            <div class="iphone-screen">
+              <!-- Dynamic Island -->
+              <div class="absolute top-0 left-0 right-0 h-10 glass z-30 flex items-center justify-center">
+                  <div class="w-[120px] h-8 bg-black rounded-full flex items-center justify-between px-4 mt-2">
+                      <div class="w-1.5 h-1.5 rounded-full bg-[#1a1a2e] shadow-[inset_0_0_2px_rgba(255,255,255,0.3)]"></div>
+                      <div class="flex gap-1.5">
+                          <div class="w-1 h-1 rounded-full bg-green-500/40"></div>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="flex-1 w-full relative bg-white pt-16 overflow-y-auto overflow-x-hidden" id="phone-content-host">
+                <iframe src="https://affairs.com/" class="w-full h-full border-none" title="Mobile Preview"></iframe>
+              </div>
+              
+              <!-- Home Indicator -->
+              <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-black/10 rounded-full z-30"></div>
+              <div id="chat-container-phone" class="chat-container-wrapper"></div>
+            </div>
+          </div>
+
+          <!-- Desktop View -->
+          <div id="desktop-view" class="desktop-frame hidden">
+            <div class="desktop-screen">
+              <div class="h-10 bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-4 shrink-0">
+                  <div class="flex gap-1.5">
+                      <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+                      <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                      <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                  </div>
+                  <div class="flex-1 max-w-sm bg-white border border-slate-200 rounded-md h-6 px-4 flex items-center">
+                      <span class="text-[10px] text-slate-400 truncate tracking-wide">https://affairs.com/</span>
+                  </div>
+              </div>
+              <div class="flex-1 relative bg-white overflow-auto" id="desktop-content-host">
+                  <iframe src="https://affairs.com/" class="w-full h-full border-none" title="Desktop Preview" id="desktop-iframe"></iframe>
+              </div>
+              <div id="chat-container-desktop" class="chat-container-wrapper"></div>
+            </div>
+            <!-- Desktop Stand -->
+            <div class="flex flex-col items-center">
+              <div class="w-48 h-12 bg-gradient-to-b from-[#222] to-[#111] relative -mt-1 shadow-2xl">
+                  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-72 h-3 bg-[#0a0a0a] rounded-t-xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Chat Template -->
+  <template id="chat-template">
+    <div class="chat-container">
+        <div class="chat-window hidden flex flex-col bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden mb-5">
+            <div class="px-5 py-4 flex items-center justify-between text-white font-bold text-sm shrink-0 shadow-lg" style="background-color: #6a762f">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                    Live Agent
+                </div>
+                <button onclick="toggleChat(this)" class="hover:bg-black/10 p-1.5 rounded-md transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="flex-1 w-full bg-white relative">
+                <iframe src="https://flowise.adamscottryals.com/chatbot/c1b5691e-e5b6-4929-a799-87f1d1d2c93a" style="border:none;width:100%;height:100%;"></iframe>
+            </div>
+        </div>
+        
+        <button onclick="toggleChat(this)" class="w-12 h-12 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 group overflow-hidden relative" style="background-color: #6a762f">
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/8 transition-colors"></div>
+            <span class="bubble-icon">
+                <img src="https://cdn-icons-png.flaticon.com/128/1370/1370907.png" class="w-8 h-8 object-contain" />
+            </span>
+            <span class="close-icon hidden">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </span>
+        </button>
+    </div>
+  </template>
+
+  <script>
+    function setDevice(device) {
+        const phoneView = document.getElementById('phone-view');
+        const desktopView = document.getElementById('desktop-view');
+        const btnPhone = document.getElementById('btn-phone');
+        const btnDesktop = document.getElementById('btn-desktop');
+        const sidebar = document.getElementById('content-sidebar');
+        const mainLayout = document.getElementById('main-layout');
+        const previewArea = document.getElementById('preview-area');
+        
+        const activeClass = "flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm bg-white text-[#0088ff] shadow-sm font-bold";
+        const inactiveClass = "flex items-center gap-2 py-1.5 px-3 rounded-md transition-all text-sm text-slate-500 hover:text-slate-700";
+
+        if (device === 'phone') {
+            phoneView.classList.remove('hidden');
+            desktopView.classList.add('hidden');
+            btnPhone.className = activeClass;
+            btnDesktop.className = inactiveClass;
+            
+            mainLayout.className = "flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 mt-12 lg:mt-20";
+            sidebar.className = "flex-1 flex flex-col space-y-6 w-full text-center lg:text-left max-w-lg";
+            previewArea.className = "flex-1 flex flex-col items-center w-full space-y-4 lg:items-end";
+        } else {
+            phoneView.classList.add('hidden');
+            desktopView.classList.remove('hidden');
+            btnDesktop.className = activeClass;
+            btnPhone.className = inactiveClass;
+            
+            mainLayout.className = "flex flex-col items-center justify-between gap-12 lg:gap-24 mt-12 lg:mt-20";
+            sidebar.className = "flex-1 flex flex-col space-y-6 w-full text-center max-w-3xl";
+            previewArea.className = "flex-1 flex flex-col items-center w-full space-y-4";
+        }
+    }
+
+    function toggleChat(btn) {
+        const container = btn.closest('.chat-container');
+        const window = container.querySelector('.chat-window');
+        const bubbleIcon = container.querySelector('.bubble-icon');
+        const closeIcon = container.querySelector('.close-icon');
+        
+        if (window.classList.contains('hidden')) {
+            window.classList.remove('hidden');
+            bubbleIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+        } else {
+            window.classList.add('hidden');
+            bubbleIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        }
+    }
+
+    // Initialize chat
+    const template = document.getElementById('chat-template');
+    document.getElementById('chat-container-phone').appendChild(template.content.cloneNode(true));
+    document.getElementById('chat-container-desktop').appendChild(template.content.cloneNode(true));
+
+    // Shadow DOM fix for standalone
+    function setupShadow(hostId) {
+        const host = document.getElementById(hostId);
+        if (host && host.innerHTML.trim() !== "") {
+            const content = host.innerHTML;
+            const shadow = host.attachShadow({mode: 'open'});
+            const wrapper = document.createElement('div');
+            wrapper.style.width = '100%';
+            wrapper.innerHTML = content;
+            shadow.appendChild(wrapper);
+            host.innerHTML = '';
+        }
+    }
+    
+    // Wait for content to be ready
+    setTimeout(() => {
+        setupShadow('extracted-content-mobile');
+        setupShadow('extracted-content-desktop');
+    }, 10);
+  </script>
+</body>
+</html>
